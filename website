@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela de Precos WL Crafts - TerraBrava</title>
+  <style>
+    :root {
+      --bg: #1a1410;
+      --panel: #2a211b;
+      --panel-2: #342820;
+      --text: #f5efe6;
+      --muted: #b8a88a;
+      --gold: #d4af37;
+      --line: rgba(212, 175, 55, 0.22);
+      --min: #c9b896;
+      --max: #f0d27a;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: linear-gradient(180deg, #120e0b 0%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.9rem;
+      color: var(--gold);
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font: inherit;
+    }
+
+    .toolbar input {
+      min-width: 280px;
+      flex: 1 1 320px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      color: var(--gold);
+      font-size: 0.95rem;
+    }
+
+    .table-shell {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.22);
+      max-height: calc(100vh - 220px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1200px;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #6b5344;
+      color: #fff8ef;
+      text-align: left;
+      padding: 12px 14px;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--line);
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    tbody tr:nth-child(even):not(.group-row) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    tbody tr:hover:not(.group-row) {
+      background: rgba(212, 175, 55, 0.08);
+    }
+
+    .group-row td {
+      background: rgba(107, 83, 68, 0.55);
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding-top: 16px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 3px;
+    }
+
+    .ingredients {
+      max-width: 420px;
+      line-height: 1.45;
+      color: #ddd2bf;
+      font-size: 0.95rem;
+    }
+
+    .num { text-align: right; white-space: nowrap; }
+    .money.min { color: var(--min); }
+    .money.max { color: var(--max); font-weight: 700; }
+    .money.profit { color: #9ec89e; }
+    .money.profit.max { color: #b8e0b8; font-weight: 700; }
+
+    .hidden { display: none; }
+
+    footer {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Tabela de Precos WL Crafts</h1>
+      <p class="subtitle">
+        TerraBrava · Custo dos ingredientes + margem maxima de 55% · Lucro = preco de venda menos custo · Gerado em 2026-06-20 10:16 · 171 linhas
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Pesquisar receita, produto, ingrediente...">
+      <select id="groupFilter">
+        <option value="all">Todos os grupos</option>
+        <option value="apiarist">apiarist</option>
+        <option value="armourer">armourer</option>
+        <option value="artisan">artisan</option>
+        <option value="blacksmith">blacksmith</option>
+        <option value="butcher">butcher</option>
+        <option value="distillery">distillery</option>
+        <option value="farmer">farmer</option>
+        <option value="fisherman">fisherman</option>
+        <option value="foundry">foundry</option>
+        <option value="horsetrainer">horsetrainer</option>
+        <option value="hunter">hunter</option>
+        <option value="kitchen_shared">kitchen_shared</option>
+        <option value="lumberjack">lumberjack</option>
+        <option value="pharmacy">pharmacy</option>
+        <option value="pharmacy_shared">pharmacy_shared</option>
+        <option value="saloon_blackwater">saloon_blackwater</option>
+        <option value="saloon_common">saloon_common</option>
+        <option value="saloon_rhodes">saloon_rhodes</option>
+        <option value="saloon_stdenis">saloon_stdenis</option>
+        <option value="saloon_valentine">saloon_valentine</option>
+        <option value="taberna_blackwater">taberna_blackwater</option>
+        <option value="tobacconist">tobacconist</option>
+        <option value="veterinarian">veterinarian</option>
+      </select>
+      <span class="badge" id="count">171 linhas</span>
+    </div>
+
+    <div class="table-shell">
+      <table>
+        <thead>
+          <tr>
+            <th>Grupo</th>
+            <th>Receita</th>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th>Trabalhos</th>
+            <th>Rend.</th>
+            <th>Ingredientes</th>
+            <th>Custo</th>
+            <th>Minimo</th>
+            <th>Maximo</th>
+            <th>Lucro min</th>
+            <th>Lucro max</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr class="group-row" data-group="apiarist"><td colspan="12">apiarist</td></tr>
+<tr data-group="apiarist" data-search="apiarist vela de cera vela de cera wax_candle craft apiarist 1x mel bruto ($2.00)">
+  <td>apiarist</td>
+  <td>Vela de Cera</td>
+  <td><strong>Vela de Cera</strong><div class="muted">wax_candle</div></td>
+  <td>craft</td>
+  <td>apiarist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Mel Bruto ($2.00)</td>
+  <td class="num money">$2.00</td>
+  <td class="num money min">$2.00</td>
+  <td class="num money max">$3.10</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.10</td>
+</tr>
+<tr class="group-row" data-group="armourer"><td colspan="12">armourer</td></tr>
+<tr data-group="armourer" data-search="armourer caixa de municao espingarda (n) caixa de munição espingarda (n) ammo_box_shotgun ammo armourer2, armourer3, armourer4, armourer 8x barra de chumbo ($46.88) + 12x pólvora ($4.56)">
+  <td>armourer</td>
+  <td>Caixa de Municao Espingarda (N)</td>
+  <td><strong>Caixa de Munição Espingarda (N)</strong><div class="muted">ammo_box_shotgun</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">8x Barra de Chumbo ($46.88) + 12x Pólvora ($4.56)</td>
+  <td class="num money">$51.44</td>
+  <td class="num money min">$51.44</td>
+  <td class="num money max">$79.73</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$28.29</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao espingarda (s) caixa de munição espingarda (s) ammo_box_shotgun_slug ammo armourer2, armourer3, armourer4, armourer 10x barra de chumbo ($58.60) + 12x pólvora ($4.56)">
+  <td>armourer</td>
+  <td>Caixa de Municao Espingarda (S)</td>
+  <td><strong>Caixa de Munição Espingarda (S)</strong><div class="muted">ammo_box_shotgun_slug</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">10x Barra de Chumbo ($58.60) + 12x Pólvora ($4.56)</td>
+  <td class="num money">$63.16</td>
+  <td class="num money min">$63.16</td>
+  <td class="num money max">$97.90</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$34.74</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao pistola (hv) caixa de munição pistola (hv) ammo_box_pistol_velocity ammo armourer2, armourer3, armourer4, armourer 10x cápsula de bala ($10.20) + 15x ponta de bala ($17.55) + 10x pólvora ($3.80)">
+  <td>armourer</td>
+  <td>Caixa de Municao Pistola (HV)</td>
+  <td><strong>Caixa de Munição Pistola (HV)</strong><div class="muted">ammo_box_pistol_velocity</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">10x Cápsula de Bala ($10.20) + 15x Ponta de Bala ($17.55) + 10x Pólvora ($3.80)</td>
+  <td class="num money">$31.55</td>
+  <td class="num money min">$31.55</td>
+  <td class="num money max">$48.90</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$17.35</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao pistola (n) caixa de munição pistola (n) ammo_box_pistol ammo armourer2, armourer3, armourer4, armourer 10x cápsula de bala ($10.20) + 10x ponta de bala ($11.70) + 10x pólvora ($3.80)">
+  <td>armourer</td>
+  <td>Caixa de Municao Pistola (N)</td>
+  <td><strong>Caixa de Munição Pistola (N)</strong><div class="muted">ammo_box_pistol</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">10x Cápsula de Bala ($10.20) + 10x Ponta de Bala ($11.70) + 10x Pólvora ($3.80)</td>
+  <td class="num money">$25.70</td>
+  <td class="num money min">$25.70</td>
+  <td class="num money max">$39.84</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$14.14</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao repetidor (hv) caixa de munição repetidor (hv) ammo_box_repeater_velocity ammo armourer2, armourer3, armourer4, armourer 15x cápsula de bala ($15.30) + 20x ponta de bala ($23.40) + 12x pólvora ($4.56)">
+  <td>armourer</td>
+  <td>Caixa de Municao Repetidor (HV)</td>
+  <td><strong>Caixa de Munição Repetidor (HV)</strong><div class="muted">ammo_box_repeater_velocity</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">15x Cápsula de Bala ($15.30) + 20x Ponta de Bala ($23.40) + 12x Pólvora ($4.56)</td>
+  <td class="num money">$43.26</td>
+  <td class="num money min">$43.26</td>
+  <td class="num money max">$67.05</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$23.79</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao repetidor (n) caixa de munição repetidor (n) ammo_box_repeater ammo armourer2, armourer3, armourer4, armourer 15x cápsula de bala ($15.30) + 15x ponta de bala ($17.55) + 10x pólvora ($3.80)">
+  <td>armourer</td>
+  <td>Caixa de Municao Repetidor (N)</td>
+  <td><strong>Caixa de Munição Repetidor (N)</strong><div class="muted">ammo_box_repeater</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">15x Cápsula de Bala ($15.30) + 15x Ponta de Bala ($17.55) + 10x Pólvora ($3.80)</td>
+  <td class="num money">$36.65</td>
+  <td class="num money min">$36.65</td>
+  <td class="num money max">$56.81</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$20.16</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao revolver (hv) caixa de munição revólver (hv) ammo_box_revolver_velocity ammo armourer2, armourer3, armourer4, armourer 10x cápsula de bala ($10.20) + 15x ponta de bala ($17.55) + 10x pólvora ($3.80)">
+  <td>armourer</td>
+  <td>Caixa de Municao Revolver (HV)</td>
+  <td><strong>Caixa de Munição Revólver (HV)</strong><div class="muted">ammo_box_revolver_velocity</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">10x Cápsula de Bala ($10.20) + 15x Ponta de Bala ($17.55) + 10x Pólvora ($3.80)</td>
+  <td class="num money">$31.55</td>
+  <td class="num money min">$31.55</td>
+  <td class="num money max">$48.90</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$17.35</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao revolver (n) caixa de munição revólver (n) ammo_box_revolver ammo armourer2, armourer3, armourer4, armourer 10x cápsula de bala ($10.20) + 10x ponta de bala ($11.70) + 10x pólvora ($3.80)">
+  <td>armourer</td>
+  <td>Caixa de Municao Revolver (N)</td>
+  <td><strong>Caixa de Munição Revólver (N)</strong><div class="muted">ammo_box_revolver</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">10x Cápsula de Bala ($10.20) + 10x Ponta de Bala ($11.70) + 10x Pólvora ($3.80)</td>
+  <td class="num money">$25.70</td>
+  <td class="num money min">$25.70</td>
+  <td class="num money max">$39.84</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$14.14</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao rifle (hv) caixa de munição rifle (hv) ammo_box_rifle_velocity ammo armourer2, armourer3, armourer4, armourer 15x cápsula de bala ($15.30) + 20x ponta de bala ($23.40) + 12x pólvora ($4.56)">
+  <td>armourer</td>
+  <td>Caixa de Municao Rifle (HV)</td>
+  <td><strong>Caixa de Munição Rifle (HV)</strong><div class="muted">ammo_box_rifle_velocity</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">15x Cápsula de Bala ($15.30) + 20x Ponta de Bala ($23.40) + 12x Pólvora ($4.56)</td>
+  <td class="num money">$43.26</td>
+  <td class="num money min">$43.26</td>
+  <td class="num money max">$67.05</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$23.79</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao rifle (n) caixa de munição rifle (n) ammo_box_rifle ammo armourer2, armourer3, armourer4, armourer 15x cápsula de bala ($15.30) + 15x ponta de bala ($17.55) + 12x pólvora ($4.56)">
+  <td>armourer</td>
+  <td>Caixa de Municao Rifle (N)</td>
+  <td><strong>Caixa de Munição Rifle (N)</strong><div class="muted">ammo_box_rifle</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">15x Cápsula de Bala ($15.30) + 15x Ponta de Bala ($17.55) + 12x Pólvora ($4.56)</td>
+  <td class="num money">$37.41</td>
+  <td class="num money min">$37.41</td>
+  <td class="num money max">$57.99</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$20.58</td>
+</tr>
+<tr data-group="armourer" data-search="armourer caixa de municao rifle elefante (n) caixa de munição rifle elefante (n) ammo_box_rifle_elephant ammo armourer2, armourer3, armourer4, armourer 20x cápsula de bala ($20.40) + 25x ponta de bala ($29.25) + 15x pólvora ($5.70)">
+  <td>armourer</td>
+  <td>Caixa de Municao Rifle Elefante (N)</td>
+  <td><strong>Caixa de Munição Rifle Elefante (N)</strong><div class="muted">ammo_box_rifle_elephant</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">20x Cápsula de Bala ($20.40) + 25x Ponta de Bala ($29.25) + 15x Pólvora ($5.70)</td>
+  <td class="num money">$55.35</td>
+  <td class="num money min">$55.35</td>
+  <td class="num money max">$85.79</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$30.44</td>
+</tr>
+<tr data-group="armourer" data-search="armourer capsula de bala cápsula de bala bullet_casing ammo armourer2, armourer3, armourer4, armourer 2x barra de cobre ($10.16)">
+  <td>armourer</td>
+  <td>Capsula de Bala</td>
+  <td><strong>Cápsula de Bala</strong><div class="muted">bullet_casing</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x10</td>
+  <td class="ingredients">2x Barra de Cobre ($10.16)</td>
+  <td class="num money">$1.02</td>
+  <td class="num money min">$1.02</td>
+  <td class="num money max">$1.57</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.55</td>
+</tr>
+<tr data-group="armourer" data-search="armourer cartucho cartucho ammo_round ammo armourer2, armourer3, armourer4, armourer 1x cápsula de bala ($1.02) + 1x ponta de bala ($1.17) + 1x pólvora ($0.38)">
+  <td>armourer</td>
+  <td>Cartucho</td>
+  <td><strong>Cartucho</strong><div class="muted">ammo_round</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x10</td>
+  <td class="ingredients">1x Cápsula de Bala ($1.02) + 1x Ponta de Bala ($1.17) + 1x Pólvora ($0.38)</td>
+  <td class="num money">$0.26</td>
+  <td class="num money min">$0.26</td>
+  <td class="num money max">$0.40</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.14</td>
+</tr>
+<tr data-group="armourer" data-search="armourer pano de limpeza pano de limpeza cleaningcloth craft armourer2, armourer3, armourer4, armourer 1x tecido ($1.00) + 5x seiva ($2.00)">
+  <td>armourer</td>
+  <td>Pano de Limpeza</td>
+  <td><strong>Pano de Limpeza</strong><div class="muted">cleaningcloth</div></td>
+  <td>craft</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Tecido ($1.00) + 5x Seiva ($2.00)</td>
+  <td class="num money">$3.00</td>
+  <td class="num money min">$3.00</td>
+  <td class="num money max">$4.65</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.65</td>
+</tr>
+<tr data-group="armourer" data-search="armourer pistola m1899 pistola m1899 weapon_pistol_m1899 armourer armourer2, armourer3, armourer4, armourer 1x cano de revolver ($75.72) + 1x armação reforçada ($132.04) + 1x gatilho de revolver ($44.07) + 1x punho ($30.67) + 10x pregos ($6.70)">
+  <td>armourer</td>
+  <td>Pistola M1899</td>
+  <td><strong>Pistola m1899</strong><div class="muted">weapon_pistol_m1899</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Revolver ($75.72) + 1x Armação Reforçada ($132.04) + 1x Gatilho de Revolver ($44.07) + 1x Punho ($30.67) + 10x Pregos ($6.70)</td>
+  <td class="num money">$289.20</td>
+  <td class="num money min">$289.20</td>
+  <td class="num money max">$448.26</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$159.06</td>
+</tr>
+<tr data-group="armourer" data-search="armourer pistola mauser pistola mauser weapon_pistol_mauser armourer armourer2, armourer3, armourer4, armourer 1x cano de revolver ($75.72) + 1x armação reforçada ($132.04) + 1x gatilho de precisão ($46.92) + 1x punho ($30.67) + 12x pregos ($8.04)">
+  <td>armourer</td>
+  <td>Pistola Mauser</td>
+  <td><strong>Pistola Mauser</strong><div class="muted">weapon_pistol_mauser</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Revolver ($75.72) + 1x Armação Reforçada ($132.04) + 1x Gatilho de Precisão ($46.92) + 1x Punho ($30.67) + 12x Pregos ($8.04)</td>
+  <td class="num money">$293.39</td>
+  <td class="num money min">$293.39</td>
+  <td class="num money max">$454.75</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$161.36</td>
+</tr>
+<tr data-group="armourer" data-search="armourer polvora pólvora gunpowder ammo armourer2, armourer3, armourer4, armourer 3x enxofre ($1.50) + 3x nitrato ($1.50) + 2x carvão ($0.78)">
+  <td>armourer</td>
+  <td>Polvora</td>
+  <td><strong>Pólvora</strong><div class="muted">gunpowder</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x10</td>
+  <td class="ingredients">3x Enxofre ($1.50) + 3x Nitrato ($1.50) + 2x Carvão ($0.78)</td>
+  <td class="num money">$0.38</td>
+  <td class="num money min">$0.38</td>
+  <td class="num money max">$0.59</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.21</td>
+</tr>
+<tr data-group="armourer" data-search="armourer ponta de bala ponta de bala bullet_tip ammo armourer2, armourer3, armourer4, armourer 2x barra de chumbo ($11.72)">
+  <td>armourer</td>
+  <td>Ponta de Bala</td>
+  <td><strong>Ponta de Bala</strong><div class="muted">bullet_tip</div></td>
+  <td>ammo</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x10</td>
+  <td class="ingredients">2x Barra de Chumbo ($11.72)</td>
+  <td class="num money">$1.17</td>
+  <td class="num money min">$1.17</td>
+  <td class="num money max">$1.82</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.65</td>
+</tr>
+<tr data-group="armourer" data-search="armourer repeater carbine repetidor carbine weapon_repeater_carbine armourer armourer2, armourer3, armourer4, armourer 1x cano de rifle ($117.29) + 1x coronha ($34.30) + 1x ferrolho de rifle ($73.39) + 1x gatilho de revolver ($44.07) + 12x pregos ($8.04)">
+  <td>armourer</td>
+  <td>Repeater Carbine</td>
+  <td><strong>Repetidor Carbine</strong><div class="muted">weapon_repeater_carbine</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Rifle ($117.29) + 1x Coronha ($34.30) + 1x Ferrolho de Rifle ($73.39) + 1x Gatilho de Revolver ($44.07) + 12x Pregos ($8.04)</td>
+  <td class="num money">$277.09</td>
+  <td class="num money min">$277.09</td>
+  <td class="num money max">$429.49</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$152.40</td>
+</tr>
+<tr data-group="armourer" data-search="armourer repeater winchester repetidor winchester weapon_repeater_winchester armourer armourer2, armourer3, armourer4, armourer 1x cano de rifle ($117.29) + 1x coronha ($34.30) + 1x ferrolho de rifle ($73.39) + 1x gatilho de precisão ($46.92) + 1x armação reforçada ($132.04) + 14x pregos ($9.38)">
+  <td>armourer</td>
+  <td>Repeater Winchester</td>
+  <td><strong>Repetidor Winchester</strong><div class="muted">weapon_repeater_winchester</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Rifle ($117.29) + 1x Coronha ($34.30) + 1x Ferrolho de Rifle ($73.39) + 1x Gatilho de Precisão ($46.92) + 1x Armação Reforçada ($132.04) + 14x Pregos ($9.38)</td>
+  <td class="num money">$413.32</td>
+  <td class="num money min">$413.32</td>
+  <td class="num money max">$640.65</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$227.33</td>
+</tr>
+<tr data-group="armourer" data-search="armourer revolver cattleman revólver cattleman weapon_revolver_cattleman armourer armourer2, armourer3, armourer4, armourer 1x cano de revolver ($75.72) + 1x armação de revolver ($100.64) + 1x tambor de revolver ($72.35) + 1x gatilho de revolver ($44.07) + 1x punho ($30.67) + 6x pregos ($4.02)">
+  <td>armourer</td>
+  <td>Revolver Cattleman</td>
+  <td><strong>Revólver Cattleman</strong><div class="muted">weapon_revolver_cattleman</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Revolver ($75.72) + 1x Armação de Revolver ($100.64) + 1x Tambor de Revolver ($72.35) + 1x Gatilho de Revolver ($44.07) + 1x Punho ($30.67) + 6x Pregos ($4.02)</td>
+  <td class="num money">$327.47</td>
+  <td class="num money min">$327.47</td>
+  <td class="num money max">$507.58</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$180.11</td>
+</tr>
+<tr data-group="armourer" data-search="armourer revolver double action revólver de dupla ação weapon_revolver_doubleaction armourer armourer2, armourer3, armourer4, armourer 1x cano de revolver ($75.72) + 1x armação de revolver ($100.64) + 1x tambor de revolver ($72.35) + 1x gatilho de precisão ($46.92) + 1x punho ($30.67) + 8x pregos ($5.36)">
+  <td>armourer</td>
+  <td>Revolver Double Action</td>
+  <td><strong>Revólver de Dupla Ação</strong><div class="muted">weapon_revolver_doubleaction</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Revolver ($75.72) + 1x Armação de Revolver ($100.64) + 1x Tambor de Revolver ($72.35) + 1x Gatilho de Precisão ($46.92) + 1x Punho ($30.67) + 8x Pregos ($5.36)</td>
+  <td class="num money">$331.66</td>
+  <td class="num money min">$331.66</td>
+  <td class="num money max">$514.07</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$182.41</td>
+</tr>
+<tr data-group="armourer" data-search="armourer revolver navy revólver da marinha weapon_revolver_navy armourer armourer2, armourer3, armourer4, armourer 1x cano de revolver ($75.72) + 1x armação de revolver ($100.64) + 1x tambor de revolver ($72.35) + 1x gatilho de revolver ($44.07) + 1x punho ($30.67) + 8x pregos ($5.36)">
+  <td>armourer</td>
+  <td>Revolver Navy</td>
+  <td><strong>Revólver da Marinha</strong><div class="muted">weapon_revolver_navy</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Revolver ($75.72) + 1x Armação de Revolver ($100.64) + 1x Tambor de Revolver ($72.35) + 1x Gatilho de Revolver ($44.07) + 1x Punho ($30.67) + 8x Pregos ($5.36)</td>
+  <td class="num money">$328.81</td>
+  <td class="num money min">$328.81</td>
+  <td class="num money max">$509.66</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$180.85</td>
+</tr>
+<tr data-group="armourer" data-search="armourer revolver schofield revólver schofield weapon_revolver_schofield armourer armourer2, armourer3, armourer4, armourer 1x cano de revolver ($75.72) + 1x armação reforçada ($132.04) + 1x tambor de revolver ($72.35) + 1x gatilho de precisão ($46.92) + 1x punho ($30.67) + 10x pregos ($6.70)">
+  <td>armourer</td>
+  <td>Revolver Schofield</td>
+  <td><strong>Revólver Schofield</strong><div class="muted">weapon_revolver_schofield</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Revolver ($75.72) + 1x Armação Reforçada ($132.04) + 1x Tambor de Revolver ($72.35) + 1x Gatilho de Precisão ($46.92) + 1x Punho ($30.67) + 10x Pregos ($6.70)</td>
+  <td class="num money">$364.40</td>
+  <td class="num money min">$364.40</td>
+  <td class="num money max">$564.82</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$200.42</td>
+</tr>
+<tr data-group="armourer" data-search="armourer rifle bolt action rifle boltaction weapon_rifle_boltaction armourer armourer2, armourer3, armourer4, armourer 1x cano de rifle ($117.29) + 1x armação reforçada ($132.04) + 1x ferrolho de rifle ($73.39) + 1x gatilho de precisão ($46.92) + 1x coronha ($34.30) + 16x pregos ($10.72)">
+  <td>armourer</td>
+  <td>Rifle Bolt Action</td>
+  <td><strong>Rifle Boltaction</strong><div class="muted">weapon_rifle_boltaction</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Rifle ($117.29) + 1x Armação Reforçada ($132.04) + 1x Ferrolho de Rifle ($73.39) + 1x Gatilho de Precisão ($46.92) + 1x Coronha ($34.30) + 16x Pregos ($10.72)</td>
+  <td class="num money">$414.66</td>
+  <td class="num money min">$414.66</td>
+  <td class="num money max">$642.72</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$228.06</td>
+</tr>
+<tr data-group="armourer" data-search="armourer rifle elephant rifle elefante weapon_rifle_elephant armourer armourer2, armourer3, armourer4, armourer 1x cano de rifle ($117.29) + 1x armação reforçada ($132.04) + 1x ferrolho de rifle ($73.39) + 1x gatilho de precisão ($46.92) + 1x coronha ($34.30) + 18x pregos ($12.06)">
+  <td>armourer</td>
+  <td>Rifle Elephant</td>
+  <td><strong>Rifle Elefante</strong><div class="muted">weapon_rifle_elephant</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Rifle ($117.29) + 1x Armação Reforçada ($132.04) + 1x Ferrolho de Rifle ($73.39) + 1x Gatilho de Precisão ($46.92) + 1x Coronha ($34.30) + 18x Pregos ($12.06)</td>
+  <td class="num money">$416.00</td>
+  <td class="num money min">$416.00</td>
+  <td class="num money max">$644.80</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$228.80</td>
+</tr>
+<tr data-group="armourer" data-search="armourer rifle springfield rifle springfield weapon_rifle_springfield armourer armourer2, armourer3, armourer4, armourer 1x cano de rifle ($117.29) + 1x coronha ($34.30) + 1x ferrolho de rifle ($73.39) + 1x gatilho de revolver ($44.07) + 14x pregos ($9.38)">
+  <td>armourer</td>
+  <td>Rifle Springfield</td>
+  <td><strong>Rifle Springfield</strong><div class="muted">weapon_rifle_springfield</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Rifle ($117.29) + 1x Coronha ($34.30) + 1x Ferrolho de Rifle ($73.39) + 1x Gatilho de Revolver ($44.07) + 14x Pregos ($9.38)</td>
+  <td class="num money">$278.43</td>
+  <td class="num money min">$278.43</td>
+  <td class="num money max">$431.57</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$153.14</td>
+</tr>
+<tr data-group="armourer" data-search="armourer shotgun double barrel espingarda de duplo cano weapon_shotgun_doublebarrel armourer armourer2, armourer3, armourer4, armourer 2x cano de revolver ($151.44) + 1x armação de revolver ($100.64) + 1x gatilho de revolver ($44.07) + 1x coronha ($34.30) + 16x pregos ($10.72)">
+  <td>armourer</td>
+  <td>Shotgun Double Barrel</td>
+  <td><strong>Espingarda de Duplo Cano</strong><div class="muted">weapon_shotgun_doublebarrel</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Cano de Revolver ($151.44) + 1x Armação de Revolver ($100.64) + 1x Gatilho de Revolver ($44.07) + 1x Coronha ($34.30) + 16x Pregos ($10.72)</td>
+  <td class="num money">$341.17</td>
+  <td class="num money min">$341.17</td>
+  <td class="num money max">$528.81</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$187.64</td>
+</tr>
+<tr data-group="armourer" data-search="armourer shotgun repeating espingarda repetidora weapon_shotgun_repeating armourer armourer2, armourer3, armourer4, armourer 1x cano de rifle ($117.29) + 1x armação reforçada ($132.04) + 1x ferrolho de rifle ($73.39) + 1x gatilho de revolver ($44.07) + 1x coronha ($34.30) + 18x pregos ($12.06)">
+  <td>armourer</td>
+  <td>Shotgun Repeating</td>
+  <td><strong>Espingarda Repetidora</strong><div class="muted">weapon_shotgun_repeating</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Rifle ($117.29) + 1x Armação Reforçada ($132.04) + 1x Ferrolho de Rifle ($73.39) + 1x Gatilho de Revolver ($44.07) + 1x Coronha ($34.30) + 18x Pregos ($12.06)</td>
+  <td class="num money">$413.15</td>
+  <td class="num money min">$413.15</td>
+  <td class="num money max">$640.38</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$227.23</td>
+</tr>
+<tr data-group="armourer" data-search="armourer sniper carcano rifle sniper carcano rollingblock weapon_sniperrifle_carcano armourer armourer2, armourer3, armourer4, armourer 1x cano de rifle ($117.29) + 1x armação reforçada ($132.04) + 1x ferrolho de rifle ($73.39) + 1x gatilho de precisão ($46.92) + 1x coronha ($34.30) + 20x pregos ($13.40)">
+  <td>armourer</td>
+  <td>Sniper Carcano</td>
+  <td><strong>Rifle Sniper Carcano Rollingblock</strong><div class="muted">weapon_sniperrifle_carcano</div></td>
+  <td>armourer</td>
+  <td>armourer2, armourer3, armourer4, armourer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cano de Rifle ($117.29) + 1x Armação Reforçada ($132.04) + 1x Ferrolho de Rifle ($73.39) + 1x Gatilho de Precisão ($46.92) + 1x Coronha ($34.30) + 20x Pregos ($13.40)</td>
+  <td class="num money">$417.34</td>
+  <td class="num money min">$417.34</td>
+  <td class="num money max">$646.88</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$229.54</td>
+</tr>
+<tr class="group-row" data-group="artisan"><td colspan="12">artisan</td></tr>
+<tr data-group="artisan" data-search="artisan balde vazio balde vazio emptybucket artisan artisan, artisan2 1x barra de ferro ($4.31)">
+  <td>artisan</td>
+  <td>Balde Vazio</td>
+  <td><strong>Balde Vazio</strong><div class="muted">emptybucket</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Barra de Ferro ($4.31)</td>
+  <td class="num money">$4.31</td>
+  <td class="num money min">$4.31</td>
+  <td class="num money max">$6.68</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.37</td>
+</tr>
+<tr data-group="artisan" data-search="artisan faca padrao faca padrão weapon_melee_knife artisan artisan, artisan2 1x barra de aço ($10.43) + 1x cabo de madeira ($0.67)">
+  <td>artisan</td>
+  <td>Faca Padrao</td>
+  <td><strong>Faca Padrão</strong><div class="muted">weapon_melee_knife</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Barra de Aço ($10.43) + 1x Cabo de Madeira ($0.67)</td>
+  <td class="num money">$11.10</td>
+  <td class="num money min">$11.10</td>
+  <td class="num money max">$17.20</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$6.10</td>
+</tr>
+<tr data-group="artisan" data-search="artisan kit de reparo kit de reparação repair_kit artisan artisan, artisan2 2x peças metálicas ($8.62) + 1x couro ($8.14)">
+  <td>artisan</td>
+  <td>Kit de Reparo</td>
+  <td><strong>Kit de Reparação</strong><div class="muted">repair_kit</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Peças Metálicas ($8.62) + 1x Couro ($8.14)</td>
+  <td class="num money">$16.76</td>
+  <td class="num money min">$16.76</td>
+  <td class="num money max">$25.98</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$9.22</td>
+</tr>
+<tr data-group="artisan" data-search="artisan lanterna lanterna weapon_melee_lantern artisan artisan, artisan2 1x barra de ferro ($4.31) + 1x vidro ($0.31)">
+  <td>artisan</td>
+  <td>Lanterna</td>
+  <td><strong>Lanterna</strong><div class="muted">weapon_melee_lantern</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Barra de Ferro ($4.31) + 1x Vidro ($0.31)</td>
+  <td class="num money">$4.62</td>
+  <td class="num money min">$4.62</td>
+  <td class="num money max">$7.16</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.54</td>
+</tr>
+<tr data-group="artisan" data-search="artisan machado machado axe artisan artisan, artisan2 2x barra de ferro ($8.62) + 1x cabo de madeira ($0.67)">
+  <td>artisan</td>
+  <td>Machado</td>
+  <td><strong>Machado</strong><div class="muted">axe</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Barra de Ferro ($8.62) + 1x Cabo de Madeira ($0.67)</td>
+  <td class="num money">$9.29</td>
+  <td class="num money min">$9.29</td>
+  <td class="num money max">$14.40</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$5.11</td>
+</tr>
+<tr data-group="artisan" data-search="artisan mochila pequena mochila pequena backpack_small artisan artisan, artisan2 1x agulha de costura ($3.00) + 2x pele pequena ($3.00) + 100x algodão ($80.00)">
+  <td>artisan</td>
+  <td>Mochila Pequena</td>
+  <td><strong>Mochila Pequena</strong><div class="muted">backpack_small</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Agulha de Costura ($3.00) + 2x Pele Pequena ($3.00) + 100x Algodão ($80.00)</td>
+  <td class="num money">$86.00</td>
+  <td class="num money min">$86.00</td>
+  <td class="num money max">$133.30</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$47.30</td>
+</tr>
+<tr data-group="artisan" data-search="artisan pa pá shovel artisan artisan, artisan2 2x barra de ferro ($8.62) + 1x cabo de madeira ($0.67)">
+  <td>artisan</td>
+  <td>Pa</td>
+  <td><strong>Pá</strong><div class="muted">shovel</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Barra de Ferro ($8.62) + 1x Cabo de Madeira ($0.67)</td>
+  <td class="num money">$9.29</td>
+  <td class="num money min">$9.29</td>
+  <td class="num money max">$14.40</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$5.11</td>
+</tr>
+<tr data-group="artisan" data-search="artisan pecas de metal peças metálicas metal_parts artisan artisan, artisan2 1x barra de ferro ($4.31)">
+  <td>artisan</td>
+  <td>Pecas de Metal</td>
+  <td><strong>Peças Metálicas</strong><div class="muted">metal_parts</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Barra de Ferro ($4.31)</td>
+  <td class="num money">$4.31</td>
+  <td class="num money min">$4.31</td>
+  <td class="num money max">$6.68</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.37</td>
+</tr>
+<tr data-group="artisan" data-search="artisan peneira peneira goldpan artisan artisan, artisan2 3x madeira ($1.50) + 1x cabo de madeira ($0.67) + 4x pregos ($1.72) + 2x tecido ($2.00)">
+  <td>artisan</td>
+  <td>Peneira</td>
+  <td><strong>Peneira</strong><div class="muted">goldpan</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Madeira ($1.50) + 1x Cabo de Madeira ($0.67) + 4x Pregos ($1.72) + 2x Tecido ($2.00)</td>
+  <td class="num money">$5.89</td>
+  <td class="num money min">$5.89</td>
+  <td class="num money max">$9.13</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$3.24</td>
+</tr>
+<tr data-group="artisan" data-search="artisan picareta picareta pickaxe artisan artisan, artisan2 3x barra de ferro ($12.93) + 1x cabo de madeira ($0.67)">
+  <td>artisan</td>
+  <td>Picareta</td>
+  <td><strong>Picareta</strong><div class="muted">pickaxe</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Barra de Ferro ($12.93) + 1x Cabo de Madeira ($0.67)</td>
+  <td class="num money">$13.60</td>
+  <td class="num money min">$13.60</td>
+  <td class="num money max">$21.08</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$7.48</td>
+</tr>
+<tr data-group="artisan" data-search="artisan pregos pregos nails artisan artisan, artisan2 1x barra de ferro ($4.31)">
+  <td>artisan</td>
+  <td>Pregos</td>
+  <td><strong>Pregos</strong><div class="muted">nails</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x10</td>
+  <td class="ingredients">1x Barra de Ferro ($4.31)</td>
+  <td class="num money">$0.43</td>
+  <td class="num money min">$0.43</td>
+  <td class="num money max">$0.67</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.24</td>
+</tr>
+<tr data-group="artisan" data-search="artisan vara de pesca varas de pesca weapon_fishingrod artisan artisan, artisan2 1x cabo de madeira ($0.67) + 2x tecido ($2.00)">
+  <td>artisan</td>
+  <td>Vara de Pesca</td>
+  <td><strong>Varas de Pesca</strong><div class="muted">weapon_fishingrod</div></td>
+  <td>artisan</td>
+  <td>artisan, artisan2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cabo de Madeira ($0.67) + 2x Tecido ($2.00)</td>
+  <td class="num money">$2.67</td>
+  <td class="num money min">$2.67</td>
+  <td class="num money max">$4.14</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.47</td>
+</tr>
+<tr class="group-row" data-group="blacksmith"><td colspan="12">blacksmith</td></tr>
+<tr data-group="blacksmith" data-search="blacksmith armacao de revolver armação de revolver gun_frame pecas de armas blacksmith, blacksmith2, blacksmith3 7x barra de aço ($47.11) + 4x barra de ferro ($11.12) + 10x pregos ($6.70)">
+  <td>blacksmith</td>
+  <td>Armacao de Revolver</td>
+  <td><strong>Armação de Revolver</strong><div class="muted">gun_frame</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">7x Barra de Aço ($47.11) + 4x Barra de Ferro ($11.12) + 10x Pregos ($6.70)</td>
+  <td class="num money">$64.93</td>
+  <td class="num money min">$64.93</td>
+  <td class="num money max">$100.64</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$35.71</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith armacao reforcada armação reforçada reinforced_frame pecas de armas blacksmith, blacksmith2, blacksmith3 9x barra de aço ($60.57) + 5x barra de ferro ($13.90) + 16x pregos ($10.72)">
+  <td>blacksmith</td>
+  <td>Armacao Reforcada</td>
+  <td><strong>Armação Reforçada</strong><div class="muted">reinforced_frame</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">9x Barra de Aço ($60.57) + 5x Barra de Ferro ($13.90) + 16x Pregos ($10.72)</td>
+  <td class="num money">$85.19</td>
+  <td class="num money min">$85.19</td>
+  <td class="num money max">$132.04</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$46.85</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de aco barra de aço steel_bar ligas metalicas blacksmith, blacksmith2, blacksmith3 2x barra de ferro ($5.56) + 3x carvão ($1.17)">
+  <td>blacksmith</td>
+  <td>Barra de Aco</td>
+  <td><strong>Barra de Aço</strong><div class="muted">steel_bar</div></td>
+  <td>Ligas Metalicas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Barra de Ferro ($5.56) + 3x Carvão ($1.17)</td>
+  <td class="num money">$6.73</td>
+  <td class="num money min">$6.73</td>
+  <td class="num money max">$10.43</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$3.70</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de bronze barra de bronze bronze_bar ligas metalicas blacksmith, blacksmith2, blacksmith3 2x barra de cobre ($6.56) + 1x barra de zinco ($3.28) + 2x carvão ($0.78)">
+  <td>blacksmith</td>
+  <td>Barra de Bronze</td>
+  <td><strong>Barra de Bronze</strong><div class="muted">bronze_bar</div></td>
+  <td>Ligas Metalicas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Barra de Cobre ($6.56) + 1x Barra de Zinco ($3.28) + 2x Carvão ($0.78)</td>
+  <td class="num money">$10.62</td>
+  <td class="num money min">$10.62</td>
+  <td class="num money max">$16.46</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$5.84</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de chumbo barra de chumbo lead_bar fundicao blacksmith, blacksmith2, blacksmith3 5x chumbo ($3.00) + 2x carvão ($0.78)">
+  <td>blacksmith</td>
+  <td>Barra de Chumbo</td>
+  <td><strong>Barra de Chumbo</strong><div class="muted">lead_bar</div></td>
+  <td>Fundicao</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Chumbo ($3.00) + 2x Carvão ($0.78)</td>
+  <td class="num money">$3.78</td>
+  <td class="num money min">$3.78</td>
+  <td class="num money max">$5.86</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.08</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de cobre barra de cobre copper_bar fundicao blacksmith, blacksmith2, blacksmith3 5x cobre ($2.50) + 2x carvão ($0.78)">
+  <td>blacksmith</td>
+  <td>Barra de Cobre</td>
+  <td><strong>Barra de Cobre</strong><div class="muted">copper_bar</div></td>
+  <td>Fundicao</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Cobre ($2.50) + 2x Carvão ($0.78)</td>
+  <td class="num money">$3.28</td>
+  <td class="num money min">$3.28</td>
+  <td class="num money max">$5.08</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.80</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de ferro barra de ferro iron_bar fundicao blacksmith, blacksmith2, blacksmith3 5x ferro ($2.00) + 2x carvão ($0.78)">
+  <td>blacksmith</td>
+  <td>Barra de Ferro</td>
+  <td><strong>Barra de Ferro</strong><div class="muted">iron_bar</div></td>
+  <td>Fundicao</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Ferro ($2.00) + 2x Carvão ($0.78)</td>
+  <td class="num money">$2.78</td>
+  <td class="num money min">$2.78</td>
+  <td class="num money max">$4.31</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.53</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de latao barra de latão brass_bar ligas metalicas blacksmith, blacksmith2, blacksmith3 2x barra de cobre ($6.56) + 2x barra de zinco ($6.56) + 2x carvão ($0.78)">
+  <td>blacksmith</td>
+  <td>Barra de Latao</td>
+  <td><strong>Barra de Latão</strong><div class="muted">brass_bar</div></td>
+  <td>Ligas Metalicas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Barra de Cobre ($6.56) + 2x Barra de Zinco ($6.56) + 2x Carvão ($0.78)</td>
+  <td class="num money">$13.90</td>
+  <td class="num money min">$13.90</td>
+  <td class="num money max">$21.55</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$7.65</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de ouro barra de ouro gold_bar fundicao blacksmith, blacksmith2, blacksmith3 10x ouro ($30.00) + 4x carvão ($1.56)">
+  <td>blacksmith</td>
+  <td>Barra de Ouro</td>
+  <td><strong>Barra de Ouro</strong><div class="muted">gold_bar</div></td>
+  <td>Fundicao</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">10x Ouro ($30.00) + 4x Carvão ($1.56)</td>
+  <td class="num money">$31.56</td>
+  <td class="num money min">$31.56</td>
+  <td class="num money max">$48.92</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$17.36</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de prata barra de prata silver_bar fundicao blacksmith, blacksmith2, blacksmith3 8x prata ($6.40) + 3x carvão ($1.17)">
+  <td>blacksmith</td>
+  <td>Barra de Prata</td>
+  <td><strong>Barra de Prata</strong><div class="muted">silver_bar</div></td>
+  <td>Fundicao</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">8x Prata ($6.40) + 3x Carvão ($1.17)</td>
+  <td class="num money">$7.57</td>
+  <td class="num money min">$7.57</td>
+  <td class="num money max">$11.73</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$4.16</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith barra de zinco barra de zinco zinc_bar fundicao blacksmith, blacksmith2, blacksmith3 5x zinco ($2.50) + 2x carvão ($0.78)">
+  <td>blacksmith</td>
+  <td>Barra de Zinco</td>
+  <td><strong>Barra de Zinco</strong><div class="muted">zinc_bar</div></td>
+  <td>Fundicao</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Zinco ($2.50) + 2x Carvão ($0.78)</td>
+  <td class="num money">$3.28</td>
+  <td class="num money min">$3.28</td>
+  <td class="num money max">$5.08</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.80</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith cano de revolver cano de revolver gun_barrel pecas de armas blacksmith, blacksmith2, blacksmith3 5x barra de aço ($33.65) + 3x barra de ferro ($8.34) + 8x pregos ($5.36) + 3x madeira ($1.50)">
+  <td>blacksmith</td>
+  <td>Cano de Revolver</td>
+  <td><strong>Cano de Revolver</strong><div class="muted">gun_barrel</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Barra de Aço ($33.65) + 3x Barra de Ferro ($8.34) + 8x Pregos ($5.36) + 3x Madeira ($1.50)</td>
+  <td class="num money">$48.85</td>
+  <td class="num money min">$48.85</td>
+  <td class="num money max">$75.72</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$26.87</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith cano de rifle cano de rifle rifle_barrel pecas de armas blacksmith, blacksmith2, blacksmith3 8x barra de aço ($53.84) + 4x barra de ferro ($11.12) + 13x pregos ($8.71) + 4x madeira ($2.00)">
+  <td>blacksmith</td>
+  <td>Cano de Rifle</td>
+  <td><strong>Cano de Rifle</strong><div class="muted">rifle_barrel</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">8x Barra de Aço ($53.84) + 4x Barra de Ferro ($11.12) + 13x Pregos ($8.71) + 4x Madeira ($2.00)</td>
+  <td class="num money">$75.67</td>
+  <td class="num money min">$75.67</td>
+  <td class="num money max">$117.29</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$41.62</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith coronha coronha gun_stock pecas de armas blacksmith, blacksmith2, blacksmith3 5x madeira ($2.50) + 2x couro ($16.28) + 5x pregos ($3.35)">
+  <td>blacksmith</td>
+  <td>Coronha</td>
+  <td><strong>Coronha</strong><div class="muted">gun_stock</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Madeira ($2.50) + 2x Couro ($16.28) + 5x Pregos ($3.35)</td>
+  <td class="num money">$22.13</td>
+  <td class="num money min">$22.13</td>
+  <td class="num money max">$34.30</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$12.17</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith ferrolho de rifle ferrolho de rifle rifle_bolt pecas de armas blacksmith, blacksmith2, blacksmith3 5x barra de aço ($33.65) + 3x barra de ferro ($8.34) + 8x pregos ($5.36)">
+  <td>blacksmith</td>
+  <td>Ferrolho de Rifle</td>
+  <td><strong>Ferrolho de Rifle</strong><div class="muted">rifle_bolt</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Barra de Aço ($33.65) + 3x Barra de Ferro ($8.34) + 8x Pregos ($5.36)</td>
+  <td class="num money">$47.35</td>
+  <td class="num money min">$47.35</td>
+  <td class="num money max">$73.39</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$26.04</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith gatilho de precisao gatilho de precisão precision_trigger pecas de armas blacksmith, blacksmith2, blacksmith3 4x barra de aço ($26.92) + 5x pregos ($3.35)">
+  <td>blacksmith</td>
+  <td>Gatilho de Precisao</td>
+  <td><strong>Gatilho de Precisão</strong><div class="muted">precision_trigger</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">4x Barra de Aço ($26.92) + 5x Pregos ($3.35)</td>
+  <td class="num money">$30.27</td>
+  <td class="num money min">$30.27</td>
+  <td class="num money max">$46.92</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$16.65</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith gatilho de revolver gatilho de revolver gun_trigger pecas de armas blacksmith, blacksmith2, blacksmith3 3x barra de aço ($20.19) + 2x barra de ferro ($5.56) + 4x pregos ($2.68)">
+  <td>blacksmith</td>
+  <td>Gatilho de Revolver</td>
+  <td><strong>Gatilho de Revolver</strong><div class="muted">gun_trigger</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Barra de Aço ($20.19) + 2x Barra de Ferro ($5.56) + 4x Pregos ($2.68)</td>
+  <td class="num money">$28.43</td>
+  <td class="num money min">$28.43</td>
+  <td class="num money max">$44.07</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$15.64</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith punho punho gun_grip pecas de armas blacksmith, blacksmith2, blacksmith3 3x madeira ($1.50) + 2x couro ($16.28) + 3x pregos ($2.01)">
+  <td>blacksmith</td>
+  <td>Punho</td>
+  <td><strong>Punho</strong><div class="muted">gun_grip</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Madeira ($1.50) + 2x Couro ($16.28) + 3x Pregos ($2.01)</td>
+  <td class="num money">$19.79</td>
+  <td class="num money min">$19.79</td>
+  <td class="num money max">$30.67</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$10.88</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith tambor de revolver tambor de revolver gun_cylinder pecas de armas blacksmith, blacksmith2, blacksmith3 5x barra de aço ($33.65) + 3x barra de ferro ($8.34) + 7x pregos ($4.69)">
+  <td>blacksmith</td>
+  <td>Tambor de Revolver</td>
+  <td><strong>Tambor de Revolver</strong><div class="muted">gun_cylinder</div></td>
+  <td>Pecas de Armas</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Barra de Aço ($33.65) + 3x Barra de Ferro ($8.34) + 7x Pregos ($4.69)</td>
+  <td class="num money">$46.68</td>
+  <td class="num money min">$46.68</td>
+  <td class="num money max">$72.35</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$25.67</td>
+</tr>
+<tr data-group="blacksmith" data-search="blacksmith vidro vidro glass fundicao blacksmith, blacksmith2, blacksmith3 10x areia ($2.00)">
+  <td>blacksmith</td>
+  <td>Vidro</td>
+  <td><strong>Vidro</strong><div class="muted">glass</div></td>
+  <td>Fundicao</td>
+  <td>blacksmith, blacksmith2, blacksmith3</td>
+  <td class="num">x10</td>
+  <td class="ingredients">10x Areia ($2.00)</td>
+  <td class="num money">$0.20</td>
+  <td class="num money min">$0.20</td>
+  <td class="num money max">$0.31</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.11</td>
+</tr>
+<tr class="group-row" data-group="butcher"><td colspan="12">butcher</td></tr>
+<tr data-group="butcher" data-search="butcher banha banha banha butcher butcher 2x gordura animal ($0.80) + 1x madeira ($0.50)">
+  <td>butcher</td>
+  <td>Banha</td>
+  <td><strong>Banha</strong><div class="muted">banha</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Gordura animal ($0.80) + 1x Madeira ($0.50)</td>
+  <td class="num money">$1.30</td>
+  <td class="num money min">$1.30</td>
+  <td class="num money max">$2.02</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.72</td>
+</tr>
+<tr data-group="butcher" data-search="butcher carne picada carne picada carne_picada butcher butcher 1x carne crua ($0.29)">
+  <td>butcher</td>
+  <td>Carne Picada</td>
+  <td><strong>Carne Picada</strong><div class="muted">carne_picada</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Carne Crua ($0.29)</td>
+  <td class="num money">$0.29</td>
+  <td class="num money min">$0.29</td>
+  <td class="num money max">$0.45</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.16</td>
+</tr>
+<tr data-group="butcher" data-search="butcher carne premium carne premium carne_premium butcher butcher 1x carne crua ($0.29) + 1x sal ($0.30)">
+  <td>butcher</td>
+  <td>Carne Premium</td>
+  <td><strong>Carne Premium</strong><div class="muted">carne_premium</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Carne Crua ($0.29) + 1x Sal ($0.30)</td>
+  <td class="num money">$0.59</td>
+  <td class="num money min">$0.59</td>
+  <td class="num money max">$0.91</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.32</td>
+</tr>
+<tr data-group="butcher" data-search="butcher charque/jerky carne seca jerky butcher butcher 2x carne crua ($0.58) + 1x sal ($0.30) + 1x madeira ($0.50)">
+  <td>butcher</td>
+  <td>Charque/Jerky</td>
+  <td><strong>Carne Seca</strong><div class="muted">jerky</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Carne Crua ($0.58) + 1x Sal ($0.30) + 1x Madeira ($0.50)</td>
+  <td class="num money">$1.38</td>
+  <td class="num money min">$1.38</td>
+  <td class="num money max">$2.14</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.76</td>
+</tr>
+<tr data-group="butcher" data-search="butcher garrafas de leite garrafa de leite garrafa_leite leite butcher 10x garrafa vazia ($5.00) + 10x leite fresco ($8.00)">
+  <td>butcher</td>
+  <td>Garrafas de Leite</td>
+  <td><strong>Garrafa de Leite</strong><div class="muted">garrafa_leite</div></td>
+  <td>leite</td>
+  <td>butcher</td>
+  <td class="num">x10</td>
+  <td class="ingredients">10x Garrafa Vazia ($5.00) + 10x Leite Fresco ($8.00)</td>
+  <td class="num money">$1.30</td>
+  <td class="num money min">$1.30</td>
+  <td class="num money max">$2.02</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.72</td>
+</tr>
+<tr data-group="butcher" data-search="butcher presunto presunto ham butcher butcher 1x perna de presunto ($0.40) + 1x sal ($0.30) + 1x madeira ($0.50)">
+  <td>butcher</td>
+  <td>Presunto</td>
+  <td><strong>Presunto</strong><div class="muted">ham</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Perna de Presunto ($0.40) + 1x Sal ($0.30) + 1x Madeira ($0.50)</td>
+  <td class="num money">$1.20</td>
+  <td class="num money min">$1.20</td>
+  <td class="num money max">$1.86</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.66</td>
+</tr>
+<tr data-group="butcher" data-search="butcher processar carcaca de ave carne crua meat butcher butcher 1x carcaça de aves ($2.00)">
+  <td>butcher</td>
+  <td>Processar Carcaca de Ave</td>
+  <td><strong>Carne Crua</strong><div class="muted">meat</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x2</td>
+  <td class="ingredients">1x Carcaça de Aves ($2.00)</td>
+  <td class="num money">$0.29</td>
+  <td class="num money min">$0.29</td>
+  <td class="num money max">$0.44</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.15</td>
+</tr>
+<tr data-group="butcher" data-search="butcher processar carcaca de ave pena feather butcher butcher 1x carcaça de aves ($2.00)">
+  <td>butcher</td>
+  <td>Processar Carcaca de Ave</td>
+  <td><strong>Pena</strong><div class="muted">feather</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x5</td>
+  <td class="ingredients">1x Carcaça de Aves ($2.00)</td>
+  <td class="num money">$0.29</td>
+  <td class="num money min">$0.29</td>
+  <td class="num money max">$0.44</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.15</td>
+</tr>
+<tr data-group="butcher" data-search="butcher processar carcaca grande carne crua meat butcher butcher 1x carcaça grande ($8.00)">
+  <td>butcher</td>
+  <td>Processar Carcaca Grande</td>
+  <td><strong>Carne Crua</strong><div class="muted">meat</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x2</td>
+  <td class="ingredients">1x Carcaça Grande ($8.00)</td>
+  <td class="num money">$0.40</td>
+  <td class="num money min">$0.40</td>
+  <td class="num money max">$0.62</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.22</td>
+</tr>
+<tr data-group="butcher" data-search="butcher processar carcaca grande gordura animal animalfat butcher butcher 1x carcaça grande ($8.00)">
+  <td>butcher</td>
+  <td>Processar Carcaca Grande</td>
+  <td><strong>Gordura animal</strong><div class="muted">animalfat</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x4</td>
+  <td class="ingredients">1x Carcaça Grande ($8.00)</td>
+  <td class="num money">$0.40</td>
+  <td class="num money min">$0.40</td>
+  <td class="num money max">$0.62</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.22</td>
+</tr>
+<tr data-group="butcher" data-search="butcher processar carcaca grande perna de presunto ham_leg butcher butcher 1x carcaça grande ($8.00)">
+  <td>butcher</td>
+  <td>Processar Carcaca Grande</td>
+  <td><strong>Perna de Presunto</strong><div class="muted">ham_leg</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x4</td>
+  <td class="ingredients">1x Carcaça Grande ($8.00)</td>
+  <td class="num money">$0.40</td>
+  <td class="num money min">$0.40</td>
+  <td class="num money max">$0.62</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.22</td>
+</tr>
+<tr data-group="butcher" data-search="butcher processar carcaca grande tendão tendao butcher butcher 1x carcaça grande ($8.00)">
+  <td>butcher</td>
+  <td>Processar Carcaca Grande</td>
+  <td><strong>Tendão</strong><div class="muted">tendao</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x10</td>
+  <td class="ingredients">1x Carcaça Grande ($8.00)</td>
+  <td class="num money">$0.40</td>
+  <td class="num money min">$0.40</td>
+  <td class="num money max">$0.62</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.22</td>
+</tr>
+<tr data-group="butcher" data-search="butcher processar carcaca pequena carne crua meat butcher butcher 1x carcaça pequena ($4.00)">
+  <td>butcher</td>
+  <td>Processar Carcaca Pequena</td>
+  <td><strong>Carne Crua</strong><div class="muted">meat</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x3</td>
+  <td class="ingredients">1x Carcaça Pequena ($4.00)</td>
+  <td class="num money">$0.67</td>
+  <td class="num money min">$0.67</td>
+  <td class="num money max">$1.03</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.36</td>
+</tr>
+<tr data-group="butcher" data-search="butcher processar carcaca pequena gordura animal animalfat butcher butcher 1x carcaça pequena ($4.00)">
+  <td>butcher</td>
+  <td>Processar Carcaca Pequena</td>
+  <td><strong>Gordura animal</strong><div class="muted">animalfat</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x3</td>
+  <td class="ingredients">1x Carcaça Pequena ($4.00)</td>
+  <td class="num money">$0.67</td>
+  <td class="num money min">$0.67</td>
+  <td class="num money max">$1.03</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.36</td>
+</tr>
+<tr data-group="butcher" data-search="butcher salsicha salsicha sausage butcher butcher 2x carne crua ($0.58) + 1x gordura animal ($0.40) + 1x sal ($0.30) + 1x madeira ($0.50)">
+  <td>butcher</td>
+  <td>Salsicha</td>
+  <td><strong>Salsicha</strong><div class="muted">sausage</div></td>
+  <td>butcher</td>
+  <td>butcher</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Carne Crua ($0.58) + 1x Gordura animal ($0.40) + 1x Sal ($0.30) + 1x Madeira ($0.50)</td>
+  <td class="num money">$1.78</td>
+  <td class="num money min">$1.78</td>
+  <td class="num money max">$2.76</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.98</td>
+</tr>
+<tr class="group-row" data-group="distillery"><td colspan="12">distillery</td></tr>
+<tr data-group="distillery" data-search="distillery aguardente de amora aguardente de amora blackberry_moonshine aguardente distillery, distillery2 1x mosto de amora ($7.00) + 1x base alcoólica ($4.50)">
+  <td>distillery</td>
+  <td>Aguardente de Amora</td>
+  <td><strong>Aguardente de Amora</strong><div class="muted">blackberry_moonshine</div></td>
+  <td>Aguardente</td>
+  <td>distillery, distillery2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Mosto de Amora ($7.00) + 1x Base Alcoólica ($4.50)</td>
+  <td class="num money">$11.50</td>
+  <td class="num money min">$11.50</td>
+  <td class="num money max">$17.83</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$6.33</td>
+</tr>
+<tr data-group="distillery" data-search="distillery aguardente de bagas com hortela aguardente de bagas com hortelã minty_berry_moonshine aguardente distillery, distillery2 1x mosto de bagas com hortelã ($7.50) + 1x base alcoólica ($4.50)">
+  <td>distillery</td>
+  <td>Aguardente de Bagas com Hortela</td>
+  <td><strong>Aguardente de Bagas com Hortelã</strong><div class="muted">minty_berry_moonshine</div></td>
+  <td>Aguardente</td>
+  <td>distillery, distillery2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Mosto de Bagas com Hortelã ($7.50) + 1x Base Alcoólica ($4.50)</td>
+  <td class="num money">$12.00</td>
+  <td class="num money min">$12.00</td>
+  <td class="num money max">$18.60</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$6.60</td>
+</tr>
+<tr data-group="distillery" data-search="distillery aguardente de ginseng aguardente de ginseng ginseng_moonshine aguardente distillery, distillery2 1x mosto de ginseng ($9.00) + 1x base alcoólica ($4.50)">
+  <td>distillery</td>
+  <td>Aguardente de Ginseng</td>
+  <td><strong>Aguardente de Ginseng</strong><div class="muted">ginseng_moonshine</div></td>
+  <td>Aguardente</td>
+  <td>distillery, distillery2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Mosto de Ginseng ($9.00) + 1x Base Alcoólica ($4.50)</td>
+  <td class="num money">$13.50</td>
+  <td class="num money min">$13.50</td>
+  <td class="num money max">$20.93</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$7.43</td>
+</tr>
+<tr data-group="distillery" data-search="distillery base alcoolica base alcoólica alcohol processos distillery, distillery2 5x milho ($2.50) + 2x Água ($2.00)">
+  <td>distillery</td>
+  <td>Base Alcoolica</td>
+  <td><strong>Base Alcoólica</strong><div class="muted">alcohol</div></td>
+  <td>Processos</td>
+  <td>distillery, distillery2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Milho ($2.50) + 2x Água ($2.00)</td>
+  <td class="num money">$4.50</td>
+  <td class="num money min">$4.50</td>
+  <td class="num money max">$6.98</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.48</td>
+</tr>
+<tr data-group="distillery" data-search="distillery mosto de amora mosto de amora blackberry_mash processos distillery, distillery2 5x amora ($2.50) + 5x milho ($2.50) + 2x Água ($2.00)">
+  <td>distillery</td>
+  <td>Mosto de Amora</td>
+  <td><strong>Mosto de Amora</strong><div class="muted">blackberry_mash</div></td>
+  <td>Processos</td>
+  <td>distillery, distillery2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Amora ($2.50) + 5x Milho ($2.50) + 2x Água ($2.00)</td>
+  <td class="num money">$7.00</td>
+  <td class="num money min">$7.00</td>
+  <td class="num money max">$10.85</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$3.85</td>
+</tr>
+<tr data-group="distillery" data-search="distillery mosto de bagas com hortela mosto de bagas com hortelã minty_berry_mash processos distillery, distillery2 4x amora ($2.00) + 2x hortelã selvagem ($1.00) + 5x milho ($2.50) + 2x Água ($2.00)">
+  <td>distillery</td>
+  <td>Mosto de Bagas com Hortela</td>
+  <td><strong>Mosto de Bagas com Hortelã</strong><div class="muted">minty_berry_mash</div></td>
+  <td>Processos</td>
+  <td>distillery, distillery2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">4x Amora ($2.00) + 2x Hortelã Selvagem ($1.00) + 5x Milho ($2.50) + 2x Água ($2.00)</td>
+  <td class="num money">$7.50</td>
+  <td class="num money min">$7.50</td>
+  <td class="num money max">$11.63</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$4.13</td>
+</tr>
+<tr data-group="distillery" data-search="distillery mosto de ginseng mosto de ginseng ginseng_mash processos distillery, distillery2 3x ginseng americano ($4.50) + 5x milho ($2.50) + 2x Água ($2.00)">
+  <td>distillery</td>
+  <td>Mosto de Ginseng</td>
+  <td><strong>Mosto de Ginseng</strong><div class="muted">ginseng_mash</div></td>
+  <td>Processos</td>
+  <td>distillery, distillery2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Ginseng Americano ($4.50) + 5x Milho ($2.50) + 2x Água ($2.00)</td>
+  <td class="num money">$9.00</td>
+  <td class="num money min">$9.00</td>
+  <td class="num money max">$13.95</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$4.95</td>
+</tr>
+<tr data-group="distillery" data-search="distillery whiskey da casa whiskey da casa whiskey_da_casa aguardente distillery, distillery2 2x base alcoólica ($9.00) + 1x Água ($1.00) + 3x milho ($1.50)">
+  <td>distillery</td>
+  <td>Whiskey da Casa</td>
+  <td><strong>Whiskey da Casa</strong><div class="muted">whiskey_da_casa</div></td>
+  <td>Aguardente</td>
+  <td>distillery, distillery2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Base Alcoólica ($9.00) + 1x Água ($1.00) + 3x Milho ($1.50)</td>
+  <td class="num money">$11.50</td>
+  <td class="num money min">$11.50</td>
+  <td class="num money max">$17.83</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$6.33</td>
+</tr>
+<tr class="group-row" data-group="farmer"><td colspan="12">farmer</td></tr>
+<tr data-group="farmer" data-search="farmer farinha farinha flour craft farmer 2x trigo ($1.00)">
+  <td>farmer</td>
+  <td>Farinha</td>
+  <td><strong>Farinha</strong><div class="muted">flour</div></td>
+  <td>craft</td>
+  <td>farmer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Trigo ($1.00)</td>
+  <td class="num money">$1.00</td>
+  <td class="num money min">$1.00</td>
+  <td class="num money max">$1.55</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.55</td>
+</tr>
+<tr data-group="farmer" data-search="farmer manteiga manteiga butter craft farmer 2x leite fresco ($1.60)">
+  <td>farmer</td>
+  <td>Manteiga</td>
+  <td><strong>Manteiga</strong><div class="muted">butter</div></td>
+  <td>craft</td>
+  <td>farmer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Leite Fresco ($1.60)</td>
+  <td class="num money">$1.60</td>
+  <td class="num money min">$1.60</td>
+  <td class="num money max">$2.48</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.88</td>
+</tr>
+<tr data-group="farmer" data-search="farmer queijo queijo cheese craft farmer 2x leite fresco ($1.60)">
+  <td>farmer</td>
+  <td>Queijo</td>
+  <td><strong>Queijo</strong><div class="muted">cheese</div></td>
+  <td>craft</td>
+  <td>farmer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Leite Fresco ($1.60)</td>
+  <td class="num money">$1.60</td>
+  <td class="num money min">$1.60</td>
+  <td class="num money max">$2.48</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.88</td>
+</tr>
+<tr class="group-row" data-group="fisherman"><td colspan="12">fisherman</td></tr>
+<tr data-group="fisherman" data-search="fisherman filete de peixe fresco filete de peixe fresco fishmeat craft fisherman 1x peixe cru ($1.00)">
+  <td>fisherman</td>
+  <td>Filete de Peixe Fresco</td>
+  <td><strong>Filete de Peixe Fresco</strong><div class="muted">fishmeat</div></td>
+  <td>craft</td>
+  <td>fisherman</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Peixe Cru ($1.00)</td>
+  <td class="num money">$1.00</td>
+  <td class="num money min">$1.00</td>
+  <td class="num money max">$1.55</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.55</td>
+</tr>
+<tr class="group-row" data-group="foundry"><td colspan="12">foundry</td></tr>
+<tr data-group="foundry" data-search="foundry barra de aco barra de aço steel_bar craft foundry 1x barra de ferro ($1.19) + 1x carvão ($0.39)">
+  <td>foundry</td>
+  <td>Barra de Aco</td>
+  <td><strong>Barra de Aço</strong><div class="muted">steel_bar</div></td>
+  <td>craft</td>
+  <td>foundry</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Barra de Ferro ($1.19) + 1x Carvão ($0.39)</td>
+  <td class="num money">$1.58</td>
+  <td class="num money min">$1.58</td>
+  <td class="num money max">$2.45</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.87</td>
+</tr>
+<tr data-group="foundry" data-search="foundry barra de cobre barra de cobre copper_bar craft foundry 2x cobre ($1.00) + 1x carvão ($0.39)">
+  <td>foundry</td>
+  <td>Barra de Cobre</td>
+  <td><strong>Barra de Cobre</strong><div class="muted">copper_bar</div></td>
+  <td>craft</td>
+  <td>foundry</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Cobre ($1.00) + 1x Carvão ($0.39)</td>
+  <td class="num money">$1.39</td>
+  <td class="num money min">$1.39</td>
+  <td class="num money max">$2.15</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.76</td>
+</tr>
+<tr data-group="foundry" data-search="foundry barra de ferro barra de ferro iron_bar craft foundry 2x ferro ($0.80) + 1x carvão ($0.39)">
+  <td>foundry</td>
+  <td>Barra de Ferro</td>
+  <td><strong>Barra de Ferro</strong><div class="muted">iron_bar</div></td>
+  <td>craft</td>
+  <td>foundry</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Ferro ($0.80) + 1x Carvão ($0.39)</td>
+  <td class="num money">$1.19</td>
+  <td class="num money min">$1.19</td>
+  <td class="num money max">$1.84</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.65</td>
+</tr>
+<tr data-group="foundry" data-search="foundry barra de ouro barra de ouro gold_bar craft foundry 2x ouro ($6.00) + 1x carvão ($0.39)">
+  <td>foundry</td>
+  <td>Barra de Ouro</td>
+  <td><strong>Barra de Ouro</strong><div class="muted">gold_bar</div></td>
+  <td>craft</td>
+  <td>foundry</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Ouro ($6.00) + 1x Carvão ($0.39)</td>
+  <td class="num money">$6.39</td>
+  <td class="num money min">$6.39</td>
+  <td class="num money max">$9.90</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$3.51</td>
+</tr>
+<tr class="group-row" data-group="horsetrainer"><td colspan="12">horsetrainer</td></tr>
+<tr data-group="horsetrainer" data-search="horsetrainer cubo de açúcar cubo de açúcar sugarcube craft horsetrainer 5x cana-de-acucar ($4.00)">
+  <td>horsetrainer</td>
+  <td>Cubo de Açúcar</td>
+  <td><strong>Cubo de Açúcar</strong><div class="muted">sugarcube</div></td>
+  <td>craft</td>
+  <td>horsetrainer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Cana-de-Acucar ($4.00)</td>
+  <td class="num money">$4.00</td>
+  <td class="num money min">$4.00</td>
+  <td class="num money max">$6.20</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.20</td>
+</tr>
+<tr data-group="horsetrainer" data-search="horsetrainer escova escova para cavalo horse_brush craft horsetrainer 1x cabo de madeira ($0.67) + 5x algodão ($4.00)">
+  <td>horsetrainer</td>
+  <td>Escova</td>
+  <td><strong>Escova para Cavalo</strong><div class="muted">horse_brush</div></td>
+  <td>craft</td>
+  <td>horsetrainer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Cabo de Madeira ($0.67) + 5x Algodão ($4.00)</td>
+  <td class="num money">$4.67</td>
+  <td class="num money min">$4.67</td>
+  <td class="num money max">$7.24</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.57</td>
+</tr>
+<tr data-group="horsetrainer" data-search="horsetrainer estimulante estimulante para cavalo horse_stimulant craft horsetrainer 1x garrafa vazia ($0.50) + 1x Água ($1.00) + 5x folhas ($1.50)">
+  <td>horsetrainer</td>
+  <td>Estimulante</td>
+  <td><strong>Estimulante para Cavalo</strong><div class="muted">horse_stimulant</div></td>
+  <td>craft</td>
+  <td>horsetrainer</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Garrafa Vazia ($0.50) + 1x Água ($1.00) + 5x Folhas ($1.50)</td>
+  <td class="num money">$3.00</td>
+  <td class="num money min">$3.00</td>
+  <td class="num money max">$4.65</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.65</td>
+</tr>
+<tr data-group="horsetrainer" data-search="horsetrainer ração animal ração animal animal_feed cavalos horsetrainer 5x trigo ($2.50) + 5x cenoura ($2.00) + 5x batata ($2.00)">
+  <td>horsetrainer</td>
+  <td>Ração Animal</td>
+  <td><strong>Ração Animal</strong><div class="muted">animal_feed</div></td>
+  <td>Cavalos</td>
+  <td>horsetrainer</td>
+  <td class="num">x20</td>
+  <td class="ingredients">5x Trigo ($2.50) + 5x Cenoura ($2.00) + 5x Batata ($2.00)</td>
+  <td class="num money">$0.33</td>
+  <td class="num money min">$0.33</td>
+  <td class="num money max">$0.50</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.17</td>
+</tr>
+<tr class="group-row" data-group="hunter"><td colspan="12">hunter</td></tr>
+<tr data-group="hunter" data-search="hunter arco padrão arco padrão weapon_bow caça hunter 2x cabo de madeira ($1.34) + 1x tendão ($0.62) + 3x seiva ($1.20)">
+  <td>hunter</td>
+  <td>Arco Padrão</td>
+  <td><strong>Arco Padrão</strong><div class="muted">weapon_bow</div></td>
+  <td>Caça</td>
+  <td>hunter</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Cabo de Madeira ($1.34) + 1x Tendão ($0.62) + 3x Seiva ($1.20)</td>
+  <td class="num money">$3.16</td>
+  <td class="num money min">$3.16</td>
+  <td class="num money max">$4.90</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.74</td>
+</tr>
+<tr data-group="hunter" data-search="hunter pack de flechas pack de flechas (n) ammo_arrow caça hunter 5x pena ($2.25) + 5x galhos ($1.30)">
+  <td>hunter</td>
+  <td>Pack de Flechas</td>
+  <td><strong>Pack de Flechas (N)</strong><div class="muted">ammo_arrow</div></td>
+  <td>Caça</td>
+  <td>hunter</td>
+  <td class="num">x5</td>
+  <td class="ingredients">5x Pena ($2.25) + 5x Galhos ($1.30)</td>
+  <td class="num money">$0.71</td>
+  <td class="num money min">$0.71</td>
+  <td class="num money max">$1.10</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.39</td>
+</tr>
+<tr data-group="hunter" data-search="hunter tratar peles grandes couro leather peles hunter 5x pele grande ($15.00)">
+  <td>hunter</td>
+  <td>Tratar Peles Grandes</td>
+  <td><strong>Couro</strong><div class="muted">leather</div></td>
+  <td>Peles</td>
+  <td>hunter</td>
+  <td class="num">x2</td>
+  <td class="ingredients">5x Pele Grande ($15.00)</td>
+  <td class="num money">$7.50</td>
+  <td class="num money min">$7.50</td>
+  <td class="num money max">$11.63</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$4.13</td>
+</tr>
+<tr data-group="hunter" data-search="hunter tratar peles pequenas couro leather peles hunter 7x pele pequena ($10.50)">
+  <td>hunter</td>
+  <td>Tratar Peles Pequenas</td>
+  <td><strong>Couro</strong><div class="muted">leather</div></td>
+  <td>Peles</td>
+  <td>hunter</td>
+  <td class="num">x2</td>
+  <td class="ingredients">7x Pele Pequena ($10.50)</td>
+  <td class="num money">$5.25</td>
+  <td class="num money min">$5.25</td>
+  <td class="num money max">$8.14</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.89</td>
+</tr>
+<tr class="group-row" data-group="kitchen_shared"><td colspan="12">kitchen_shared</td></tr>
+<tr data-group="kitchen_shared" data-search="kitchen_shared carne assada carne assada roastedmeat food bakery 2x carne crua ($0.90) + 1x ervas ($0.50)">
+  <td>kitchen_shared</td>
+  <td>Carne Assada</td>
+  <td><strong>Carne Assada</strong><div class="muted">roastedmeat</div></td>
+  <td>food</td>
+  <td>bakery</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Carne Crua ($0.90) + 1x Ervas ($0.50)</td>
+  <td class="num money">$1.40</td>
+  <td class="num money min">$1.40</td>
+  <td class="num money max">$2.17</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.77</td>
+</tr>
+<tr data-group="kitchen_shared" data-search="kitchen_shared ensopado de carne ensopado stew food bakery 1x carne crua ($0.45) + 1x cenoura ($0.40) + 1x Água ($1.00)">
+  <td>kitchen_shared</td>
+  <td>Ensopado de Carne</td>
+  <td><strong>Ensopado</strong><div class="muted">stew</div></td>
+  <td>food</td>
+  <td>bakery</td>
+  <td class="num">x2</td>
+  <td class="ingredients">1x Carne Crua ($0.45) + 1x Cenoura ($0.40) + 1x Água ($1.00)</td>
+  <td class="num money">$0.93</td>
+  <td class="num money min">$0.93</td>
+  <td class="num money max">$1.43</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.50</td>
+</tr>
+<tr data-group="kitchen_shared" data-search="kitchen_shared pao fresco pão bread food bakery 2x trigo ($1.00) + 1x Água ($1.00)">
+  <td>kitchen_shared</td>
+  <td>Pao Fresco</td>
+  <td><strong>Pão</strong><div class="muted">bread</div></td>
+  <td>food</td>
+  <td>bakery</td>
+  <td class="num">x3</td>
+  <td class="ingredients">2x Trigo ($1.00) + 1x Água ($1.00)</td>
+  <td class="num money">$0.67</td>
+  <td class="num money min">$0.67</td>
+  <td class="num money max">$1.03</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.36</td>
+</tr>
+<tr data-group="kitchen_shared" data-search="kitchen_shared sopa de legumes sopa de legumes soup food bakery 1x cenoura ($0.40) + 1x milho ($0.50) + 1x Água ($1.00)">
+  <td>kitchen_shared</td>
+  <td>Sopa de Legumes</td>
+  <td><strong>Sopa de Legumes</strong><div class="muted">soup</div></td>
+  <td>food</td>
+  <td>bakery</td>
+  <td class="num">x2</td>
+  <td class="ingredients">1x Cenoura ($0.40) + 1x Milho ($0.50) + 1x Água ($1.00)</td>
+  <td class="num money">$0.95</td>
+  <td class="num money min">$0.95</td>
+  <td class="num money max">$1.47</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.52</td>
+</tr>
+<tr data-group="kitchen_shared" data-search="kitchen_shared tarte de maca tarte de maçã pie food bakery 2x maçã ($0.80) + 1x trigo ($0.50) + 1x açúcar ($0.60)">
+  <td>kitchen_shared</td>
+  <td>Tarte de Maca</td>
+  <td><strong>Tarte de Maçã</strong><div class="muted">pie</div></td>
+  <td>food</td>
+  <td>bakery</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Maçã ($0.80) + 1x Trigo ($0.50) + 1x Açúcar ($0.60)</td>
+  <td class="num money">$1.90</td>
+  <td class="num money min">$1.90</td>
+  <td class="num money max">$2.95</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.05</td>
+</tr>
+<tr class="group-row" data-group="lumberjack"><td colspan="12">lumberjack</td></tr>
+<tr data-group="lumberjack" data-search="lumberjack aparas de madeira aparas de madeira wood_shavings madeira lumberjack, lumberjack2 1x toro de madeira ($2.50)">
+  <td>lumberjack</td>
+  <td>Aparas de Madeira</td>
+  <td><strong>Aparas de Madeira</strong><div class="muted">wood_shavings</div></td>
+  <td>Madeira</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x12</td>
+  <td class="ingredients">1x Toro de Madeira ($2.50)</td>
+  <td class="num money">$0.17</td>
+  <td class="num money min">$0.17</td>
+  <td class="num money max">$0.26</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.09</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack aparas de madeira galhos galhos madeira lumberjack, lumberjack2 1x toro de madeira ($2.50)">
+  <td>lumberjack</td>
+  <td>Aparas de Madeira</td>
+  <td><strong>Galhos</strong><div class="muted">galhos</div></td>
+  <td>Madeira</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x3</td>
+  <td class="ingredients">1x Toro de Madeira ($2.50)</td>
+  <td class="num money">$0.17</td>
+  <td class="num money min">$0.17</td>
+  <td class="num money max">$0.26</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.09</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack cabos de madeira cabo de madeira cabo_madeira processos lumberjack, lumberjack2 5x galhos ($0.85)">
+  <td>lumberjack</td>
+  <td>Cabos de Madeira</td>
+  <td><strong>Cabo de Madeira</strong><div class="muted">cabo_madeira</div></td>
+  <td>Processos</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x2</td>
+  <td class="ingredients">5x Galhos ($0.85)</td>
+  <td class="num money">$0.43</td>
+  <td class="num money min">$0.43</td>
+  <td class="num money max">$0.66</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.23</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack carroca agricola reforcada carroca agricola reforcada wl_wagon_wagon04x carrocas lumberjack, lumberjack2 40x tábua de madeira ($25.20) + 14x cabo de madeira ($6.02) + 3x barra de aço ($31.29) + 2x barra de latão ($43.10) + 1x barra de bronze ($16.46) + 5x barra de zinco ($25.40) + 1x barra de prata ($11.73) + 25x pregos ($16.75) + 8x resina ($4.00) + 5x aparas de madeira ($0.85) + valor dos cavalos $3700.00">
+  <td>lumberjack</td>
+  <td>Carroca Agricola Reforcada</td>
+  <td><strong>Carroca Agricola Reforcada</strong><div class="muted">wl_wagon_wagon04x</div></td>
+  <td>Carrocas</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">40x Tábua de Madeira ($25.20) + 14x Cabo de Madeira ($6.02) + 3x Barra de Aço ($31.29) + 2x Barra de Latão ($43.10) + 1x Barra de Bronze ($16.46) + 5x Barra de Zinco ($25.40) + 1x Barra de Prata ($11.73) + 25x Pregos ($16.75) + 8x Resina ($4.00) + 5x Aparas de Madeira ($0.85) + Valor dos cavalos $3700.00</td>
+  <td class="num money">$3880.80</td>
+  <td class="num money min">$3880.80</td>
+  <td class="num money max">$6015.24</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2134.44</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack carroca camponesa leve carroca camponesa leve wl_wagon_cart01 carrocas lumberjack, lumberjack2 15x tábua de madeira ($9.45) + 6x cabo de madeira ($2.58) + 1x barra de bronze ($16.46) + 1x barra de aço ($10.43) + 5x barra de zinco ($25.40) + 1x barra de prata ($11.73) + 8x pregos ($5.36) + 3x resina ($1.50) + valor dos cavalos $300.00">
+  <td>lumberjack</td>
+  <td>Carroca Camponesa Leve</td>
+  <td><strong>Carroca Camponesa Leve</strong><div class="muted">wl_wagon_cart01</div></td>
+  <td>Carrocas</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">15x Tábua de Madeira ($9.45) + 6x Cabo de Madeira ($2.58) + 1x Barra de Bronze ($16.46) + 1x Barra de Aço ($10.43) + 5x Barra de Zinco ($25.40) + 1x Barra de Prata ($11.73) + 8x Pregos ($5.36) + 3x Resina ($1.50) + Valor dos cavalos $300.00</td>
+  <td class="num money">$382.91</td>
+  <td class="num money min">$382.91</td>
+  <td class="num money max">$593.51</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$210.60</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack carroca de mercado carroca de mercado wl_wagon_cart03 carrocas lumberjack, lumberjack2 26x tábua de madeira ($16.38) + 10x cabo de madeira ($4.30) + 2x barra de aço ($20.86) + 1x barra de latão ($21.55) + 1x barra de bronze ($16.46) + 5x barra de zinco ($25.40) + 1x barra de prata ($11.73) + 15x pregos ($10.05) + 5x resina ($2.50) + 3x aparas de madeira ($0.51) + valor dos cavalos $600.00">
+  <td>lumberjack</td>
+  <td>Carroca de Mercado</td>
+  <td><strong>Carroca de Mercado</strong><div class="muted">wl_wagon_cart03</div></td>
+  <td>Carrocas</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">26x Tábua de Madeira ($16.38) + 10x Cabo de Madeira ($4.30) + 2x Barra de Aço ($20.86) + 1x Barra de Latão ($21.55) + 1x Barra de Bronze ($16.46) + 5x Barra de Zinco ($25.40) + 1x Barra de Prata ($11.73) + 15x Pregos ($10.05) + 5x Resina ($2.50) + 3x Aparas de Madeira ($0.51) + Valor dos cavalos $600.00</td>
+  <td class="num money">$729.74</td>
+  <td class="num money min">$729.74</td>
+  <td class="num money max">$1131.10</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$401.36</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack carvão carvão coal madeira lumberjack, lumberjack2 1x madeira ($0.50)">
+  <td>lumberjack</td>
+  <td>Carvão</td>
+  <td><strong>Carvão</strong><div class="muted">coal</div></td>
+  <td>Madeira</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x2</td>
+  <td class="ingredients">1x Madeira ($0.50)</td>
+  <td class="num money">$0.25</td>
+  <td class="num money min">$0.25</td>
+  <td class="num money max">$0.39</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.14</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack papel processado papel processado papel papel lumberjack, lumberjack2 4x aparas de madeira ($0.68) + 1x resina ($0.50)">
+  <td>lumberjack</td>
+  <td>Papel Processado</td>
+  <td><strong>Papel Processado</strong><div class="muted">papel</div></td>
+  <td>Papel</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x6</td>
+  <td class="ingredients">4x Aparas de Madeira ($0.68) + 1x Resina ($0.50)</td>
+  <td class="num money">$0.20</td>
+  <td class="num money min">$0.20</td>
+  <td class="num money max">$0.30</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.10</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack processar aparas aparas de madeira wood_shavings madeira lumberjack, lumberjack2 4x madeira ($2.00)">
+  <td>lumberjack</td>
+  <td>Processar Aparas</td>
+  <td><strong>Aparas de Madeira</strong><div class="muted">wood_shavings</div></td>
+  <td>Madeira</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x4</td>
+  <td class="ingredients">4x Madeira ($2.00)</td>
+  <td class="num money">$0.50</td>
+  <td class="num money min">$0.50</td>
+  <td class="num money max">$0.78</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.28</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack processar tronco toro de madeira wood_log madeira lumberjack, lumberjack2 5x madeira ($2.50)">
+  <td>lumberjack</td>
+  <td>Processar Tronco</td>
+  <td><strong>Toro de Madeira</strong><div class="muted">wood_log</div></td>
+  <td>Madeira</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Madeira ($2.50)</td>
+  <td class="num money">$2.50</td>
+  <td class="num money min">$2.50</td>
+  <td class="num money max">$3.88</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.38</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack resina resina resin madeira lumberjack, lumberjack2 5x madeira ($2.50)">
+  <td>lumberjack</td>
+  <td>Resina</td>
+  <td><strong>Resina</strong><div class="muted">resin</div></td>
+  <td>Madeira</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x5</td>
+  <td class="ingredients">5x Madeira ($2.50)</td>
+  <td class="num money">$0.50</td>
+  <td class="num money min">$0.50</td>
+  <td class="num money max">$0.78</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.28</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack tabua de madeira tábua de madeira wood_plank madeira lumberjack, lumberjack2 1x toro de madeira ($2.50)">
+  <td>lumberjack</td>
+  <td>Tabua de Madeira</td>
+  <td><strong>Tábua de Madeira</strong><div class="muted">wood_plank</div></td>
+  <td>Madeira</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x4</td>
+  <td class="ingredients">1x Toro de Madeira ($2.50)</td>
+  <td class="num money">$0.63</td>
+  <td class="num money min">$0.63</td>
+  <td class="num money max">$0.97</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.34</td>
+</tr>
+<tr data-group="lumberjack" data-search="lumberjack tabuas refinadas tábua de madeira wood_plank processos lumberjack, lumberjack2 5x madeira ($2.50)">
+  <td>lumberjack</td>
+  <td>Tabuas Refinadas</td>
+  <td><strong>Tábua de Madeira</strong><div class="muted">wood_plank</div></td>
+  <td>Processos</td>
+  <td>lumberjack, lumberjack2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Madeira ($2.50)</td>
+  <td class="num money">$2.50</td>
+  <td class="num money min">$2.50</td>
+  <td class="num money max">$3.88</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.38</td>
+</tr>
+<tr class="group-row" data-group="pharmacy"><td colspan="12">pharmacy</td></tr>
+<tr data-group="pharmacy" data-search="pharmacy analgesico analgésico painkiller craft pharmacy 2x ervas ($1.00) + 1x base alcoólica ($6.98)">
+  <td>pharmacy</td>
+  <td>Analgesico</td>
+  <td><strong>Analgésico</strong><div class="muted">painkiller</div></td>
+  <td>craft</td>
+  <td>pharmacy</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Ervas ($1.00) + 1x Base Alcoólica ($6.98)</td>
+  <td class="num money">$7.98</td>
+  <td class="num money min">$7.98</td>
+  <td class="num money max">$12.37</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$4.39</td>
+</tr>
+<tr data-group="pharmacy" data-search="pharmacy antidoto antídoto de cobra antivenom craft pharmacy 3x ervas ($1.50) + 1x veneno ($1.00) + 1x Água ($1.00)">
+  <td>pharmacy</td>
+  <td>Antidoto</td>
+  <td><strong>Antídoto de Cobra</strong><div class="muted">antivenom</div></td>
+  <td>craft</td>
+  <td>pharmacy</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Ervas ($1.50) + 1x Veneno ($1.00) + 1x Água ($1.00)</td>
+  <td class="num money">$3.50</td>
+  <td class="num money min">$3.50</td>
+  <td class="num money max">$5.43</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.93</td>
+</tr>
+<tr data-group="pharmacy" data-search="pharmacy kit medico kit médico medical_kit craft pharmacy 3x ligadura ($9.30) + 1x primeiros socorros ($18.57) + 1x base alcoólica ($6.98)">
+  <td>pharmacy</td>
+  <td>Kit Medico</td>
+  <td><strong>Kit Médico</strong><div class="muted">medical_kit</div></td>
+  <td>craft</td>
+  <td>pharmacy</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Ligadura ($9.30) + 1x Primeiros Socorros ($18.57) + 1x Base Alcoólica ($6.98)</td>
+  <td class="num money">$34.85</td>
+  <td class="num money min">$34.85</td>
+  <td class="num money max">$54.02</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$19.17</td>
+</tr>
+<tr data-group="pharmacy" data-search="pharmacy remedio de gripe remédio de gripe flu_medicine craft pharmacy 2x ervas ($1.00) + 1x Água ($1.00)">
+  <td>pharmacy</td>
+  <td>Remedio de Gripe</td>
+  <td><strong>Remédio de Gripe</strong><div class="muted">flu_medicine</div></td>
+  <td>craft</td>
+  <td>pharmacy</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Ervas ($1.00) + 1x Água ($1.00)</td>
+  <td class="num money">$2.00</td>
+  <td class="num money min">$2.00</td>
+  <td class="num money max">$3.10</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.10</td>
+</tr>
+<tr data-group="pharmacy" data-search="pharmacy tonico de reanimacao tônico de reanimação revive_tonic craft pharmacy 4x ervas ($2.00) + 1x base alcoólica ($6.98) + 1x Água ($1.00)">
+  <td>pharmacy</td>
+  <td>Tonico de Reanimacao</td>
+  <td><strong>Tônico de Reanimação</strong><div class="muted">revive_tonic</div></td>
+  <td>craft</td>
+  <td>pharmacy</td>
+  <td class="num">x1</td>
+  <td class="ingredients">4x Ervas ($2.00) + 1x Base Alcoólica ($6.98) + 1x Água ($1.00)</td>
+  <td class="num money">$9.98</td>
+  <td class="num money min">$9.98</td>
+  <td class="num money max">$15.47</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$5.49</td>
+</tr>
+<tr data-group="pharmacy" data-search="pharmacy tonico de saude tônico de saúde tonic_health craft pharmacy 3x ervas ($1.50) + 1x Água ($1.00)">
+  <td>pharmacy</td>
+  <td>Tonico de Saude</td>
+  <td><strong>Tônico de Saúde</strong><div class="muted">tonic_health</div></td>
+  <td>craft</td>
+  <td>pharmacy</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Ervas ($1.50) + 1x Água ($1.00)</td>
+  <td class="num money">$2.50</td>
+  <td class="num money min">$2.50</td>
+  <td class="num money max">$3.88</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.38</td>
+</tr>
+<tr class="group-row" data-group="pharmacy_shared"><td colspan="12">pharmacy_shared</td></tr>
+<tr data-group="pharmacy_shared" data-search="pharmacy_shared ligadura ligadura bandage craft pharmacy, veterinarian 2x tecido ($2.00)">
+  <td>pharmacy_shared</td>
+  <td>Ligadura</td>
+  <td><strong>Ligadura</strong><div class="muted">bandage</div></td>
+  <td>craft</td>
+  <td>pharmacy, veterinarian</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Tecido ($2.00)</td>
+  <td class="num money">$2.00</td>
+  <td class="num money min">$2.00</td>
+  <td class="num money max">$3.10</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.10</td>
+</tr>
+<tr data-group="pharmacy_shared" data-search="pharmacy_shared ligadura de campo ligadura de campo fieldbandage craft pharmacy, veterinarian 3x tecido ($3.00) + 1x ervas ($0.50)">
+  <td>pharmacy_shared</td>
+  <td>Ligadura de Campo</td>
+  <td><strong>Ligadura de Campo</strong><div class="muted">fieldbandage</div></td>
+  <td>craft</td>
+  <td>pharmacy, veterinarian</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Tecido ($3.00) + 1x Ervas ($0.50)</td>
+  <td class="num money">$3.50</td>
+  <td class="num money min">$3.50</td>
+  <td class="num money max">$5.43</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.93</td>
+</tr>
+<tr data-group="pharmacy_shared" data-search="pharmacy_shared primeiros socorros primeiros socorros firstaid craft pharmacy, veterinarian 2x ligadura ($4.00) + 1x base alcoólica ($6.98) + 2x ervas ($1.00)">
+  <td>pharmacy_shared</td>
+  <td>Primeiros Socorros</td>
+  <td><strong>Primeiros Socorros</strong><div class="muted">firstaid</div></td>
+  <td>craft</td>
+  <td>pharmacy, veterinarian</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Ligadura ($4.00) + 1x Base Alcoólica ($6.98) + 2x Ervas ($1.00)</td>
+  <td class="num money">$11.98</td>
+  <td class="num money min">$11.98</td>
+  <td class="num money max">$18.57</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$6.59</td>
+</tr>
+<tr class="group-row" data-group="saloon_blackwater"><td colspan="12">saloon_blackwater</td></tr>
+<tr data-group="saloon_blackwater" data-search="saloon_blackwater assado do prefeito assado do prefeito assado_do_prefeito food blasaloontender 2x carne premium ($1.82) + 2x cenoura ($0.80) + 2x batata ($0.80) + 1x sal ($0.30)">
+  <td>saloon_blackwater</td>
+  <td>Assado do Prefeito</td>
+  <td><strong>Assado do Prefeito</strong><div class="muted">assado_do_prefeito</div></td>
+  <td>food</td>
+  <td>blasaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Carne Premium ($1.82) + 2x Cenoura ($0.80) + 2x Batata ($0.80) + 1x Sal ($0.30)</td>
+  <td class="num money">$3.72</td>
+  <td class="num money min">$3.72</td>
+  <td class="num money max">$5.77</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.05</td>
+</tr>
+<tr data-group="saloon_blackwater" data-search="saloon_blackwater bife de blackwater bife de blackwater bife_de_blackwater food blasaloontender 2x carne premium ($1.82) + 1x sal ($0.30) + 1x ervas ($0.50)">
+  <td>saloon_blackwater</td>
+  <td>Bife de Blackwater</td>
+  <td><strong>Bife de Blackwater</strong><div class="muted">bife_de_blackwater</div></td>
+  <td>food</td>
+  <td>blasaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Carne Premium ($1.82) + 1x Sal ($0.30) + 1x Ervas ($0.50)</td>
+  <td class="num money">$2.62</td>
+  <td class="num money min">$2.62</td>
+  <td class="num money max">$4.06</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.44</td>
+</tr>
+<tr data-group="saloon_blackwater" data-search="saloon_blackwater cafe especial café especial cafe_especial drinks blasaloontender 1x Água ($1.00) + 2x grãos de café ($2.00) + 1x açúcar ($0.60)">
+  <td>saloon_blackwater</td>
+  <td>Cafe Especial</td>
+  <td><strong>Café Especial</strong><div class="muted">cafe_especial</div></td>
+  <td>drinks</td>
+  <td>blasaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Água ($1.00) + 2x Grãos de Café ($2.00) + 1x Açúcar ($0.60)</td>
+  <td class="num money">$3.60</td>
+  <td class="num money min">$3.60</td>
+  <td class="num money max">$5.58</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.98</td>
+</tr>
+<tr data-group="saloon_blackwater" data-search="saloon_blackwater filete do lago filete do lago filete_do_lago food blasaloontender 3x filete de peixe fresco ($4.65) + 1x sal ($0.30) + 1x ervas ($0.50)">
+  <td>saloon_blackwater</td>
+  <td>Filete do Lago</td>
+  <td><strong>Filete do Lago</strong><div class="muted">filete_do_lago</div></td>
+  <td>food</td>
+  <td>blasaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Filete de Peixe Fresco ($4.65) + 1x Sal ($0.30) + 1x Ervas ($0.50)</td>
+  <td class="num money">$5.45</td>
+  <td class="num money min">$5.45</td>
+  <td class="num money max">$8.45</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$3.00</td>
+</tr>
+<tr data-group="saloon_blackwater" data-search="saloon_blackwater whiskey da casa whiskey da casa whiskey_da_casa drinks blasaloontender 1x Água ($1.00) + 3x milho ($1.50)">
+  <td>saloon_blackwater</td>
+  <td>Whiskey da Casa</td>
+  <td><strong>Whiskey da Casa</strong><div class="muted">whiskey_da_casa</div></td>
+  <td>drinks</td>
+  <td>blasaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Água ($1.00) + 3x Milho ($1.50)</td>
+  <td class="num money">$2.50</td>
+  <td class="num money min">$2.50</td>
+  <td class="num money max">$3.88</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.38</td>
+</tr>
+<tr class="group-row" data-group="saloon_common"><td colspan="12">saloon_common</td></tr>
+<tr data-group="saloon_common" data-search="saloon_common bife frito bife frito steak food saloon 1x carne crua ($0.45) + 1x ervas ($0.50)">
+  <td>saloon_common</td>
+  <td>Bife Frito</td>
+  <td><strong>Bife Frito</strong><div class="muted">steak</div></td>
+  <td>food</td>
+  <td>saloon</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Carne Crua ($0.45) + 1x Ervas ($0.50)</td>
+  <td class="num money">$0.95</td>
+  <td class="num money min">$0.95</td>
+  <td class="num money max">$1.47</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.52</td>
+</tr>
+<tr data-group="saloon_common" data-search="saloon_common cafe café coffee drinks saloon 1x grãos de café ($1.00) + 1x Água ($1.00)">
+  <td>saloon_common</td>
+  <td>Cafe</td>
+  <td><strong>Café</strong><div class="muted">coffee</div></td>
+  <td>drinks</td>
+  <td>saloon</td>
+  <td class="num">x2</td>
+  <td class="ingredients">1x Grãos de Café ($1.00) + 1x Água ($1.00)</td>
+  <td class="num money">$1.00</td>
+  <td class="num money min">$1.00</td>
+  <td class="num money max">$1.55</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.55</td>
+</tr>
+<tr data-group="saloon_common" data-search="saloon_common cerveja cerveja beer drinks saloon 1x trigo ($0.50) + 1x Água ($1.00)">
+  <td>saloon_common</td>
+  <td>Cerveja</td>
+  <td><strong>Cerveja</strong><div class="muted">beer</div></td>
+  <td>drinks</td>
+  <td>saloon</td>
+  <td class="num">x2</td>
+  <td class="ingredients">1x Trigo ($0.50) + 1x Água ($1.00)</td>
+  <td class="num money">$0.75</td>
+  <td class="num money min">$0.75</td>
+  <td class="num money max">$1.16</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.41</td>
+</tr>
+<tr data-group="saloon_common" data-search="saloon_common limonada limonada lemonade drinks saloon 2x limão ($1.00) + 1x açúcar ($0.60) + 1x Água ($1.00)">
+  <td>saloon_common</td>
+  <td>Limonada</td>
+  <td><strong>Limonada</strong><div class="muted">lemonade</div></td>
+  <td>drinks</td>
+  <td>saloon</td>
+  <td class="num">x2</td>
+  <td class="ingredients">2x Limão ($1.00) + 1x Açúcar ($0.60) + 1x Água ($1.00)</td>
+  <td class="num money">$1.30</td>
+  <td class="num money min">$1.30</td>
+  <td class="num money max">$2.02</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.72</td>
+</tr>
+<tr data-group="saloon_common" data-search="saloon_common rum rum rum drinks saloon 3x açúcar ($1.80) + 1x Água ($1.00)">
+  <td>saloon_common</td>
+  <td>Rum</td>
+  <td><strong>Rum</strong><div class="muted">rum</div></td>
+  <td>drinks</td>
+  <td>saloon</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Açúcar ($1.80) + 1x Água ($1.00)</td>
+  <td class="num money">$2.80</td>
+  <td class="num money min">$2.80</td>
+  <td class="num money max">$4.34</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.54</td>
+</tr>
+<tr data-group="saloon_common" data-search="saloon_common tequila tequila tequila drinks saloon 2x açúcar ($1.20) + 1x cacto ($0.50)">
+  <td>saloon_common</td>
+  <td>Tequila</td>
+  <td><strong>Tequila</strong><div class="muted">tequila</div></td>
+  <td>drinks</td>
+  <td>saloon</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Açúcar ($1.20) + 1x Cacto ($0.50)</td>
+  <td class="num money">$1.70</td>
+  <td class="num money min">$1.70</td>
+  <td class="num money max">$2.64</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.94</td>
+</tr>
+<tr data-group="saloon_common" data-search="saloon_common vinho tinto vinho tinto wine drinks saloon 3x uvas ($1.80) + 1x açúcar ($0.60)">
+  <td>saloon_common</td>
+  <td>Vinho Tinto</td>
+  <td><strong>Vinho Tinto</strong><div class="muted">wine</div></td>
+  <td>drinks</td>
+  <td>saloon</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Uvas ($1.80) + 1x Açúcar ($0.60)</td>
+  <td class="num money">$2.40</td>
+  <td class="num money min">$2.40</td>
+  <td class="num money max">$3.72</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.32</td>
+</tr>
+<tr data-group="saloon_common" data-search="saloon_common vodka vodka vodka drinks saloon 2x batata ($0.80) + 1x Água ($1.00)">
+  <td>saloon_common</td>
+  <td>Vodka</td>
+  <td><strong>Vodka</strong><div class="muted">vodka</div></td>
+  <td>drinks</td>
+  <td>saloon</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Batata ($0.80) + 1x Água ($1.00)</td>
+  <td class="num money">$1.80</td>
+  <td class="num money min">$1.80</td>
+  <td class="num money max">$2.79</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.99</td>
+</tr>
+<tr data-group="saloon_common" data-search="saloon_common whiskey whisky whiskey drinks saloon 2x milho ($1.00) + 1x Água ($1.00)">
+  <td>saloon_common</td>
+  <td>Whiskey</td>
+  <td><strong>Whisky</strong><div class="muted">whiskey</div></td>
+  <td>drinks</td>
+  <td>saloon</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Milho ($1.00) + 1x Água ($1.00)</td>
+  <td class="num money">$2.00</td>
+  <td class="num money min">$2.00</td>
+  <td class="num money max">$3.10</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.10</td>
+</tr>
+<tr class="group-row" data-group="saloon_rhodes"><td colspan="12">saloon_rhodes</td></tr>
+<tr data-group="saloon_rhodes" data-search="saloon_rhodes ensopado do cacador ensopado do caçador rhodes_hunter_stew food rhosaloontender 2x carne cozinhada ($4.00) + 2x batata ($0.80) + 1x cenoura ($0.40) + 1x alho-de-corvo ($0.60)">
+  <td>saloon_rhodes</td>
+  <td>Ensopado do Cacador</td>
+  <td><strong>Ensopado do Caçador</strong><div class="muted">rhodes_hunter_stew</div></td>
+  <td>food</td>
+  <td>rhosaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Carne Cozinhada ($4.00) + 2x Batata ($0.80) + 1x Cenoura ($0.40) + 1x Alho-de-Corvo ($0.60)</td>
+  <td class="num money">$5.80</td>
+  <td class="num money min">$5.80</td>
+  <td class="num money max">$8.99</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$3.19</td>
+</tr>
+<tr data-group="saloon_rhodes" data-search="saloon_rhodes frango com milho frango com milho rhodes_chicken_corn food rhosaloontender 2x carne crua ($0.90) + 2x milho ($1.00) + 1x alface ($0.40)">
+  <td>saloon_rhodes</td>
+  <td>Frango com Milho</td>
+  <td><strong>Frango com Milho</strong><div class="muted">rhodes_chicken_corn</div></td>
+  <td>food</td>
+  <td>rhosaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Carne Crua ($0.90) + 2x Milho ($1.00) + 1x Alface ($0.40)</td>
+  <td class="num money">$2.30</td>
+  <td class="num money min">$2.30</td>
+  <td class="num money max">$3.57</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.27</td>
+</tr>
+<tr data-group="saloon_rhodes" data-search="saloon_rhodes peixe grelhado de rio peixe grelhado de rio rhodes_river_fish food rhosaloontender 2x filete de peixe fresco ($3.10) + 1x batata ($0.40) + 1x tomate ($0.40)">
+  <td>saloon_rhodes</td>
+  <td>Peixe Grelhado de Rio</td>
+  <td><strong>Peixe Grelhado de Rio</strong><div class="muted">rhodes_river_fish</div></td>
+  <td>food</td>
+  <td>rhosaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Filete de Peixe Fresco ($3.10) + 1x Batata ($0.40) + 1x Tomate ($0.40)</td>
+  <td class="num money">$3.90</td>
+  <td class="num money min">$3.90</td>
+  <td class="num money max">$6.05</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.15</td>
+</tr>
+<tr class="group-row" data-group="saloon_stdenis"><td colspan="12">saloon_stdenis</td></tr>
+<tr data-group="saloon_stdenis" data-search="saloon_stdenis ensopado da cidade ensopado da cidade stdenis_city_stew food stdenissaloontender1, stdenissaloontender2 2x carne cozinhada ($4.00) + 2x tomate ($0.80) + 1x brócolos ($0.50) + 1x cenoura ($0.40)">
+  <td>saloon_stdenis</td>
+  <td>Ensopado da Cidade</td>
+  <td><strong>Ensopado da Cidade</strong><div class="muted">stdenis_city_stew</div></td>
+  <td>food</td>
+  <td>stdenissaloontender1, stdenissaloontender2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Carne Cozinhada ($4.00) + 2x Tomate ($0.80) + 1x Brócolos ($0.50) + 1x Cenoura ($0.40)</td>
+  <td class="num money">$5.70</td>
+  <td class="num money min">$5.70</td>
+  <td class="num money max">$8.84</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$3.14</td>
+</tr>
+<tr data-group="saloon_stdenis" data-search="saloon_stdenis peixe a saint denis peixe à saint denis stdenis_fish_plate food stdenissaloontender1, stdenissaloontender2 2x filete de peixe fresco ($3.10) + 1x trigo ($0.50) + 1x alho-de-corvo ($0.60)">
+  <td>saloon_stdenis</td>
+  <td>Peixe a Saint Denis</td>
+  <td><strong>Peixe à Saint Denis</strong><div class="muted">stdenis_fish_plate</div></td>
+  <td>food</td>
+  <td>stdenissaloontender1, stdenissaloontender2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Filete de Peixe Fresco ($3.10) + 1x Trigo ($0.50) + 1x Alho-de-Corvo ($0.60)</td>
+  <td class="num money">$4.20</td>
+  <td class="num money min">$4.20</td>
+  <td class="num money max">$6.51</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$2.31</td>
+</tr>
+<tr data-group="saloon_stdenis" data-search="saloon_stdenis prato do mercado prato do mercado stdenis_market_plate food stdenissaloontender1, stdenissaloontender2 1x carne cozinhada ($2.00) + 1x alface ($0.40) + 1x tomate ($0.40) + 1x brócolos ($0.50)">
+  <td>saloon_stdenis</td>
+  <td>Prato do Mercado</td>
+  <td><strong>Prato do Mercado</strong><div class="muted">stdenis_market_plate</div></td>
+  <td>food</td>
+  <td>stdenissaloontender1, stdenissaloontender2</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Carne Cozinhada ($2.00) + 1x Alface ($0.40) + 1x Tomate ($0.40) + 1x Brócolos ($0.50)</td>
+  <td class="num money">$3.30</td>
+  <td class="num money min">$3.30</td>
+  <td class="num money max">$5.12</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.82</td>
+</tr>
+<tr class="group-row" data-group="saloon_valentine"><td colspan="12">saloon_valentine</td></tr>
+<tr data-group="saloon_valentine" data-search="saloon_valentine bife do xerife bife do xerife bife_do_xerife food valsaloontender 1x sal ($0.30) + 1x carne crua ($0.45) + 1x gordura animal ($0.62) + 1x Água ($1.00)">
+  <td>saloon_valentine</td>
+  <td>Bife do Xerife</td>
+  <td><strong>Bife do Xerife</strong><div class="muted">bife_do_xerife</div></td>
+  <td>food</td>
+  <td>valsaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Sal ($0.30) + 1x Carne Crua ($0.45) + 1x Gordura animal ($0.62) + 1x Água ($1.00)</td>
+  <td class="num money">$2.37</td>
+  <td class="num money min">$2.37</td>
+  <td class="num money max">$3.67</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.30</td>
+</tr>
+<tr data-group="saloon_valentine" data-search="saloon_valentine costeletas da fronteira costeletas da fronteira costeletas_da_fronteira food valsaloontender 1x sal ($0.30) + 1x carne crua ($0.45) + 1x gordura animal ($0.62) + 1x Água ($1.00)">
+  <td>saloon_valentine</td>
+  <td>Costeletas da Fronteira</td>
+  <td><strong>Costeletas da Fronteira</strong><div class="muted">costeletas_da_fronteira</div></td>
+  <td>food</td>
+  <td>valsaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Sal ($0.30) + 1x Carne Crua ($0.45) + 1x Gordura animal ($0.62) + 1x Água ($1.00)</td>
+  <td class="num money">$2.37</td>
+  <td class="num money min">$2.37</td>
+  <td class="num money max">$3.67</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.30</td>
+</tr>
+<tr data-group="saloon_valentine" data-search="saloon_valentine truta do dakota truta do dakota truta_do_dakota food valsaloontender 1x filete de peixe fresco ($1.55) + 1x sal ($0.30)">
+  <td>saloon_valentine</td>
+  <td>Truta do Dakota</td>
+  <td><strong>Truta do Dakota</strong><div class="muted">truta_do_dakota</div></td>
+  <td>food</td>
+  <td>valsaloontender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Filete de Peixe Fresco ($1.55) + 1x Sal ($0.30)</td>
+  <td class="num money">$1.85</td>
+  <td class="num money min">$1.85</td>
+  <td class="num money max">$2.87</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.02</td>
+</tr>
+<tr class="group-row" data-group="taberna_blackwater"><td colspan="12">taberna_blackwater</td></tr>
+<tr data-group="taberna_blackwater" data-search="taberna_blackwater cafe preto café preto cafe_preto drinks bltabernatender 1x Água ($1.00) + 2x grãos de café ($2.00)">
+  <td>taberna_blackwater</td>
+  <td>Cafe Preto</td>
+  <td><strong>Café Preto</strong><div class="muted">cafe_preto</div></td>
+  <td>drinks</td>
+  <td>bltabernatender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Água ($1.00) + 2x Grãos de Café ($2.00)</td>
+  <td class="num money">$3.00</td>
+  <td class="num money min">$3.00</td>
+  <td class="num money max">$4.65</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.65</td>
+</tr>
+<tr data-group="taberna_blackwater" data-search="taberna_blackwater caldeirada do rio caldeirada do rio caldeirada_do_rio food bltabernatender 1x filete de peixe fresco ($1.55) + 1x Água ($1.00) + 1x sal ($0.30)">
+  <td>taberna_blackwater</td>
+  <td>Caldeirada do Rio</td>
+  <td><strong>Caldeirada do Rio</strong><div class="muted">caldeirada_do_rio</div></td>
+  <td>food</td>
+  <td>bltabernatender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Filete de Peixe Fresco ($1.55) + 1x Água ($1.00) + 1x Sal ($0.30)</td>
+  <td class="num money">$2.85</td>
+  <td class="num money min">$2.85</td>
+  <td class="num money max">$4.42</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.57</td>
+</tr>
+<tr data-group="taberna_blackwater" data-search="taberna_blackwater carne rustica da taberna carne rústica da taberna carne_rustica_da_taberna food bltabernatender 1x carne crua ($0.45) + 1x gordura animal ($0.62) + 1x sal ($0.30) + 1x Água ($1.00)">
+  <td>taberna_blackwater</td>
+  <td>Carne Rustica da Taberna</td>
+  <td><strong>Carne Rústica da Taberna</strong><div class="muted">carne_rustica_da_taberna</div></td>
+  <td>food</td>
+  <td>bltabernatender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Carne Crua ($0.45) + 1x Gordura animal ($0.62) + 1x Sal ($0.30) + 1x Água ($1.00)</td>
+  <td class="num money">$2.37</td>
+  <td class="num money min">$2.37</td>
+  <td class="num money max">$3.67</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.30</td>
+</tr>
+<tr data-group="taberna_blackwater" data-search="taberna_blackwater cerveja caseira cerveja caseira cerveja_caseira drinks bltabernatender 1x Água ($1.00) + 2x trigo ($1.00)">
+  <td>taberna_blackwater</td>
+  <td>Cerveja Caseira</td>
+  <td><strong>Cerveja Caseira</strong><div class="muted">cerveja_caseira</div></td>
+  <td>drinks</td>
+  <td>bltabernatender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Água ($1.00) + 2x Trigo ($1.00)</td>
+  <td class="num money">$2.00</td>
+  <td class="num money min">$2.00</td>
+  <td class="num money max">$3.10</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.10</td>
+</tr>
+<tr data-group="taberna_blackwater" data-search="taberna_blackwater panela do cacador panela do caçador panela_do_cacador food bltabernatender 1x carne crua ($0.45) + 1x batata ($0.40) + 1x Água ($1.00) + 1x sal ($0.30)">
+  <td>taberna_blackwater</td>
+  <td>Panela do Cacador</td>
+  <td><strong>Panela do Caçador</strong><div class="muted">panela_do_cacador</div></td>
+  <td>food</td>
+  <td>bltabernatender</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Carne Crua ($0.45) + 1x Batata ($0.40) + 1x Água ($1.00) + 1x Sal ($0.30)</td>
+  <td class="num money">$2.15</td>
+  <td class="num money min">$2.15</td>
+  <td class="num money max">$3.33</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.18</td>
+</tr>
+<tr class="group-row" data-group="tobacconist"><td colspan="12">tobacconist</td></tr>
+<tr data-group="tobacconist" data-search="tobacconist a melhor raspadinha do raúl a melhor raspadinha do raúl raspadinha_ouro artigos tobacconist 5x papel processado ($1.55) + 3x carvão ($1.17)">
+  <td>tobacconist</td>
+  <td>A Melhor Raspadinha do Raúl</td>
+  <td><strong>A Melhor Raspadinha do Raúl</strong><div class="muted">raspadinha_ouro</div></td>
+  <td>Artigos</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">5x Papel Processado ($1.55) + 3x Carvão ($1.17)</td>
+  <td class="num money">$2.72</td>
+  <td class="num money min">$2.72</td>
+  <td class="num money max">$4.22</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.50</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist bilhete de lotaria do raúl bilhete de lotaria do raúl bilhete_lotaria artigos tobacconist 2x papel processado ($0.62) + 2x carvão ($0.78)">
+  <td>tobacconist</td>
+  <td>Bilhete de Lotaria do Raúl</td>
+  <td><strong>Bilhete de Lotaria do Raúl</strong><div class="muted">bilhete_lotaria</div></td>
+  <td>Artigos</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Papel Processado ($0.62) + 2x Carvão ($0.78)</td>
+  <td class="num money">$1.40</td>
+  <td class="num money min">$1.40</td>
+  <td class="num money max">$2.17</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.77</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist cachimbo cachimbo pipe tabaco tobacconist 2x madeira ($1.00) + 1x cabo de madeira ($0.67)">
+  <td>tobacconist</td>
+  <td>Cachimbo</td>
+  <td><strong>Cachimbo</strong><div class="muted">pipe</div></td>
+  <td>Tabaco</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">2x Madeira ($1.00) + 1x Cabo de Madeira ($0.67)</td>
+  <td class="num money">$1.67</td>
+  <td class="num money min">$1.67</td>
+  <td class="num money max">$2.59</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.92</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist caderno caderno notepad artigos tobacconist 6x papel processado ($1.86) + 1x tecido ($1.00)">
+  <td>tobacconist</td>
+  <td>Caderno</td>
+  <td><strong>Caderno</strong><div class="muted">notepad</div></td>
+  <td>Artigos</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">6x Papel Processado ($1.86) + 1x Tecido ($1.00)</td>
+  <td class="num money">$2.86</td>
+  <td class="num money min">$2.86</td>
+  <td class="num money max">$4.43</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.57</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist caixa de fósforos caixa de fósforos matches tabaco tobacconist 3x aparas de madeira ($0.78) + 1x enxofre ($0.50)">
+  <td>tobacconist</td>
+  <td>Caixa de Fósforos</td>
+  <td><strong>Caixa de Fósforos</strong><div class="muted">matches</div></td>
+  <td>Tabaco</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Aparas de Madeira ($0.78) + 1x Enxofre ($0.50)</td>
+  <td class="num money">$1.28</td>
+  <td class="num money min">$1.28</td>
+  <td class="num money max">$1.98</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.70</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist caixa terra brava (20 cigarros) caixa terra brava (20) caixa_cigarros_tb tabaco tobacconist 20x tabaco premium ($20.00) + 2x papel de enrolar ($0.32) + 1x papel processado ($0.31)">
+  <td>tobacconist</td>
+  <td>Caixa Terra Brava (20 cigarros)</td>
+  <td><strong>Caixa Terra Brava (20)</strong><div class="muted">caixa_cigarros_tb</div></td>
+  <td>Tabaco</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">20x Tabaco Premium ($20.00) + 2x Papel de Enrolar ($0.32) + 1x Papel Processado ($0.31)</td>
+  <td class="num money">$20.63</td>
+  <td class="num money min">$20.63</td>
+  <td class="num money max">$31.98</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$11.35</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist mapa do mundo mapa map_world artigos tobacconist 3x couro ($24.42)">
+  <td>tobacconist</td>
+  <td>Mapa do Mundo</td>
+  <td><strong>Mapa</strong><div class="muted">map_world</div></td>
+  <td>Artigos</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Couro ($24.42)</td>
+  <td class="num money">$24.42</td>
+  <td class="num money min">$24.42</td>
+  <td class="num money max">$37.85</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$13.43</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist onças de tabaco onça de tabaco tobacco_ounce processos tobacconist 20x restos de tabaco ($20.00)">
+  <td>tobacconist</td>
+  <td>Onças de Tabaco</td>
+  <td><strong>Onça de Tabaco</strong><div class="muted">tobacco_ounce</div></td>
+  <td>Processos</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">20x Restos de Tabaco ($20.00)</td>
+  <td class="num money">$20.00</td>
+  <td class="num money min">$20.00</td>
+  <td class="num money max">$31.00</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$11.00</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist papel de enrolar papel de enrolar rolling_paper artigos tobacconist 5x papel processado ($1.55)">
+  <td>tobacconist</td>
+  <td>Papel de Enrolar</td>
+  <td><strong>Papel de Enrolar</strong><div class="muted">rolling_paper</div></td>
+  <td>Artigos</td>
+  <td>tobacconist</td>
+  <td class="num">x10</td>
+  <td class="ingredients">5x Papel Processado ($1.55)</td>
+  <td class="num money">$0.16</td>
+  <td class="num money min">$0.16</td>
+  <td class="num money max">$0.24</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.08</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist processar tabaco seco restos de tabaco tobacco_scraps processos tobacconist 10x folha de tabaco seca ($10.00)">
+  <td>tobacconist</td>
+  <td>Processar Tabaco Seco</td>
+  <td><strong>Restos de Tabaco</strong><div class="muted">tobacco_scraps</div></td>
+  <td>Processos</td>
+  <td>tobacconist</td>
+  <td class="num">x5</td>
+  <td class="ingredients">10x Folha de Tabaco Seca ($10.00)</td>
+  <td class="num money">$1.00</td>
+  <td class="num money min">$1.00</td>
+  <td class="num money max">$1.55</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.55</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist processar tabaco seco tabaco premium premium_tobacco processos tobacconist 10x folha de tabaco seca ($10.00)">
+  <td>tobacconist</td>
+  <td>Processar Tabaco Seco</td>
+  <td><strong>Tabaco Premium</strong><div class="muted">premium_tobacco</div></td>
+  <td>Processos</td>
+  <td>tobacconist</td>
+  <td class="num">x5</td>
+  <td class="ingredients">10x Folha de Tabaco Seca ($10.00)</td>
+  <td class="num money">$1.00</td>
+  <td class="num money min">$1.00</td>
+  <td class="num money max">$1.55</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.55</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist raspadinha do raúl raspadinha do raúl raspadinha artigos tobacconist 3x papel processado ($0.93) + 3x carvão ($1.17)">
+  <td>tobacconist</td>
+  <td>Raspadinha do Raúl</td>
+  <td><strong>Raspadinha do Raúl</strong><div class="muted">raspadinha</div></td>
+  <td>Artigos</td>
+  <td>tobacconist</td>
+  <td class="num">x1</td>
+  <td class="ingredients">3x Papel Processado ($0.93) + 3x Carvão ($1.17)</td>
+  <td class="num money">$2.10</td>
+  <td class="num money min">$2.10</td>
+  <td class="num money max">$3.25</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$1.15</td>
+</tr>
+<tr data-group="tobacconist" data-search="tobacconist secar folhas de tabaco folha de tabaco seca dried_tobacco processos tobacconist 10x folha de tabaco ($10.00)">
+  <td>tobacconist</td>
+  <td>Secar Folhas de Tabaco</td>
+  <td><strong>Folha de Tabaco Seca</strong><div class="muted">dried_tobacco</div></td>
+  <td>Processos</td>
+  <td>tobacconist</td>
+  <td class="num">x10</td>
+  <td class="ingredients">10x Folha de Tabaco ($10.00)</td>
+  <td class="num money">$1.00</td>
+  <td class="num money min">$1.00</td>
+  <td class="num money max">$1.55</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.55</td>
+</tr>
+<tr class="group-row" data-group="veterinarian"><td colspan="12">veterinarian</td></tr>
+<tr data-group="veterinarian" data-search="veterinarian revigorante para cavalo estimulante para cavalo horse_stimulant craft veterinarian 1x ervas ($0.50) + 1x açúcar ($0.60)">
+  <td>veterinarian</td>
+  <td>Revigorante para Cavalo</td>
+  <td><strong>Estimulante para Cavalo</strong><div class="muted">horse_stimulant</div></td>
+  <td>craft</td>
+  <td>veterinarian</td>
+  <td class="num">x1</td>
+  <td class="ingredients">1x Ervas ($0.50) + 1x Açúcar ($0.60)</td>
+  <td class="num money">$1.10</td>
+  <td class="num money min">$1.10</td>
+  <td class="num money max">$1.71</td>
+  <td class="num money profit">$0.00</td>
+  <td class="num money profit max">$0.61</td>
+</tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      Abrir este ficheiro no browser. Regenerar com: <code>lua5.4 tools/generate_wl_craft_prices.lua</code>
+    </footer>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('search');
+    const groupFilter = document.getElementById('groupFilter');
+    const countEl = document.getElementById('count');
+    const dataRows = Array.from(document.querySelectorAll('#rows tr:not(.group-row)'));
+    const groupRows = Array.from(document.querySelectorAll('#rows tr.group-row'));
+    const total = dataRows.length;
+
+    function updateView() {
+      const query = (searchInput.value || '').trim().toLowerCase();
+      const group = groupFilter.value;
+      let visible = 0;
+
+      dataRows.forEach(row => {
+        const matchesGroup = group === 'all' || row.dataset.group === group;
+        const matchesSearch = !query || (row.dataset.search || '').includes(query);
+        const show = matchesGroup && matchesSearch;
+        row.classList.toggle('hidden', !show);
+        if (show) visible += 1;
+      });
+
+      groupRows.forEach(row => {
+        const groupName = row.dataset.group;
+        const hasVisible = dataRows.some(r => r.dataset.group === groupName && !r.classList.contains('hidden'));
+        row.classList.toggle('hidden', !hasVisible);
+      });
+
+      countEl.textContent = visible === total ? `${total} linhas` : `${visible} / ${total} linhas`;
+    }
+
+    searchInput.addEventListener('input', updateView);
+    groupFilter.addEventListener('change', updateView);
+    updateView();
+  </script>
+</body>
+</html>
